@@ -25,7 +25,7 @@ import java.util.*;
  * @author  Dr. Z
  * @version 0.00.00.01
  */
-public final class ExpressionSaid extends Expression implements CompilableExpression
+public class ExpressionSaid extends Expression implements CompilableExpression
 {
     /** Word Numbers */
     protected int wordNumbers[];
@@ -43,13 +43,19 @@ public final class ExpressionSaid extends Expression implements CompilableExpres
         int              i, count;
         ByteCasterStream bstream = new ByteCasterStream(stream);
         
-        count       = stream.read();
+        // Read this via a template method so that the two sub-classes can override it.
+        count = getWordCount(stream);
+        
         wordNumbers = new int[count];
         
         for (i = 0; i < count; i++)
         {
             wordNumbers[i] = bstream.lohiReadUnsignedShort();
         }
+    }
+    
+    protected int getWordCount(InputStream stream) throws IOException {
+        return stream.read();
     }
     
     /**
