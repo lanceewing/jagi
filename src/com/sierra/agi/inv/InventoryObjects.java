@@ -64,10 +64,12 @@ public class InventoryObjects extends Object implements InventoryProvider
     /** Object list. */    
     protected InventoryObject[] objects = null;
     protected boolean amiga;
+    protected int engineEmulation;
     
     public InventoryObjects(ResourceConfiguration config)
     {
         amiga = config.amiga;
+        engineEmulation = config.engineEmulation;
     }
     
     /**
@@ -87,6 +89,12 @@ public class InventoryObjects extends Object implements InventoryProvider
         InventoryObject  obj;
         Hashtable        hash;
 
+        // Pre-AGIv2 games don't appear to have the first three bytes. So we read ahead
+        // to get the deduce the number of objects, and then reset.
+        if (engineEmulation < 0x2000) {
+            bstream.mark(2);
+        }
+        
         /* Calculate Inventory Object Count */
         padSize  = amiga? (byte)4: (byte)3;
         nobject  = bstream.lohiReadUnsignedShort();
@@ -95,7 +103,13 @@ public class InventoryObjects extends Object implements InventoryProvider
         objects  = new InventoryObject[nobject];
         offsets  = new int[nobject];
         
-        bstream.skip(padSize - 2);
+        // Pre-AGIv2 games don't appear to have the first three bytes.
+        if (engineEmulation < 0x2000) { 
+            bstream.reset();
+        } else {
+            bstream.skip(padSize - 2);
+        }
+        
         offset = 0;
         
         for (i = 0; i < nobject; i++)
@@ -110,7 +124,7 @@ public class InventoryObjects extends Object implements InventoryProvider
             
             offset += padSize;
         }
-
+        
         hash = loadStringTable(stream, offset);
         
         for (i = 0; i < nobject; i++)
