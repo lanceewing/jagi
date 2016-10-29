@@ -10,6 +10,7 @@ package com.sierra.agi.word;
 
 import java.io.*;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -101,6 +102,8 @@ public class Words extends Object implements WordsProvider
 {
     protected Hashtable wordHash = new Hashtable(800);
     
+    protected HashMap<Integer, Word> wordNumToWordMap = new HashMap<Integer, Word>();
+    
     /** Creates a new Word container. */
     public Words()
     {
@@ -191,9 +194,19 @@ public class Words extends Object implements WordsProvider
         w        = new Word();
         w.number = wordNum;
         w.text   = word;
-                
+        
+        // Map of word text to the Word object.
         wordHash.put(word, w);
+        
+        // Map of word number to the Word object.
+        wordNumToWordMap.put(wordNum, w);
+        
         return true;
+    }
+    
+    public Word getWordByNumber(int wordNum) 
+    {
+        return wordNumToWordMap.get(wordNum);
     }
     
     public Word findWord(String word)
