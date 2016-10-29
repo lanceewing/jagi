@@ -1,5 +1,5 @@
 /**
- *  ExpressionGreater.java
+ *  ExpressionIsSet.java
  *  Adventure Game Interpreter Logic Package
  *
  *  Created by Dr. Z.
@@ -16,22 +16,22 @@ import com.sierra.jit.code.*;
 import java.io.*;
 
 /**
- * Greater Expression.
+ * Is Set Expression.
  *
  * @author  Dr. Z
  * @version 0.00.00.01
  */
-public final class ExpressionGreater extends ExpressionBi implements CompilableExpression
+public final class ExpressionIsSetV extends ExpressionUni implements CompilableExpression
 {
     /**
-     * Creates a new Greater Expression.
+     * Creates a new Is Set Expression (V).
      *
      * @param context   Game context where this instance of the expression will be used.
      * @param stream    Logic Stream. Expression must be written in uninterpreted format.
      * @param reader    LogicReader used in the reading of this expression.
      * @param bytecode  Bytecode of the current expression.
      */
-    public ExpressionGreater(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
+    public ExpressionIsSetV(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
     {
         super(stream, bytecode);
     }
@@ -45,19 +45,23 @@ public final class ExpressionGreater extends ExpressionBi implements CompilableE
      */
     public boolean evaluate(Logic logic, LogicContext logicContext)
     {
-        return logicContext.getVar(p1) > p2;
+        short p = logicContext.getVar(p1);
+
+        return logicContext.getFlag(p);
     }
 
     public void compile(LogicCompileContext compileContext, boolean jumpOnTrue, String destination)
     {
         Scope scope = compileContext.scope;
         
+        scope.addLoadVariable("logicContext");
+        
         compileContext.compileGetVariableValue(p1);
         
-        scope.addPushConstant(p2);
+        scope.addInvokeVirtual("com.sierra.agi.logic.LogicContext", "getFlag", "(S)Z");
         
         scope.addConditionalGoto(
-            jumpOnTrue? InstructionConditionalGoto.CONDITION_CMPGT: InstructionConditionalGoto.CONDITION_CMPLE,
+            jumpOnTrue? InstructionConditionalGoto.CONDITION_IFNE: InstructionConditionalGoto.CONDITION_IFEQ,
             destination);
     }
 
@@ -70,29 +74,12 @@ public final class ExpressionGreater extends ExpressionBi implements CompilableE
      */
     public String[] getNames()
     {
-        String[] names = new String[3];
+        String[] names = new String[2];
         
-        names[0] = "greater";
-        names[1] = "v" + p1;
-        names[2] = Integer.toString(p2);
+        names[0] = "issetv";
+        names[1] = "vf" + p1;
         
         return names;
-    }
-
-    /**
-     * Returns a String represention of the expression.
-     * <B>For debugging purpose only. Will be removed in final releases.</B>
-     *
-     * @return Returns a String representation.
-     */
-    public String toString()
-    {
-        StringBuffer buffer = new StringBuffer("v");
-        
-        buffer.append(p1);
-        buffer.append(" > ");
-        buffer.append(p2);
-        return buffer.toString();
     }
 //#endif DEBUG
 }

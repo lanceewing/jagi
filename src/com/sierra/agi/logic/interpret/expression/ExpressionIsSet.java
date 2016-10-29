@@ -45,14 +45,7 @@ public final class ExpressionIsSet extends ExpressionUni implements CompilableEx
      */
     public boolean evaluate(Logic logic, LogicContext logicContext)
     {
-        short p = p1;
-        
-        if (bytecode == 0x08)
-        {
-            p = logicContext.getVar(p);
-        }
-        
-        return logicContext.getFlag(p);
+        return logicContext.getFlag(p1);
     }
 
     public void compile(LogicCompileContext compileContext, boolean jumpOnTrue, String destination)
@@ -61,14 +54,7 @@ public final class ExpressionIsSet extends ExpressionUni implements CompilableEx
         
         scope.addLoadVariable("logicContext");
         
-        if (bytecode == 0x08)
-        {
-            compileContext.compileGetVariableValue(p1);
-        }
-        else
-        {
-            scope.addPushConstant(p1);
-        }
+        scope.addPushConstant(p1);
         
         scope.addInvokeVirtual("com.sierra.agi.logic.LogicContext", "getFlag", "(S)Z");
         
@@ -89,15 +75,7 @@ public final class ExpressionIsSet extends ExpressionUni implements CompilableEx
         String[] names = new String[2];
         
         names[0] = "isset";
-       
-        if (bytecode == 0x08)
-        {
-            names[1] = "vf" + p1;
-        }
-        else
-        {
-            names[1] = "f" + p1;
-        }
+        names[1] = "f" + p1;
         
         return names;
     }

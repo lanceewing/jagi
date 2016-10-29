@@ -45,14 +45,7 @@ public final class ExpressionEqual extends ExpressionBi implements CompilableExp
      */
     public boolean evaluate(Logic logic, LogicContext logicContext)
     {
-        short p = p2;
-        
-        if (bytecode == 0x02)
-        {
-            p = logicContext.getVar(p);
-        }
-        
-        return logicContext.getVar(p1) == p;
+        return logicContext.getVar(p1) == p2;
     }
 
     public void compile(LogicCompileContext compileContext, boolean jumpOnTrue, String destination)
@@ -61,14 +54,7 @@ public final class ExpressionEqual extends ExpressionBi implements CompilableExp
         
         compileContext.compileGetVariableValue(p1);
         
-        if (bytecode == 0x02)
-        {
-            compileContext.compileGetVariableValue(p2);
-        }
-        else
-        {
-            scope.addPushConstant(p2);
-        }
+        scope.addPushConstant(p2);
         
         scope.addConditionalGoto(
             jumpOnTrue? InstructionConditionalGoto.CONDITION_CMPEQ: InstructionConditionalGoto.CONDITION_CMPNE,
@@ -88,21 +74,13 @@ public final class ExpressionEqual extends ExpressionBi implements CompilableExp
         
         names[0] = "equal";
         names[1] = "v" + p1;
-
-        if (bytecode == 0x02)
-        {
-            names[2] = "v" + p2;
-        }
-        else
-        {
-            names[3] = Integer.toString(p2);
-        }
+        names[3] = Integer.toString(p2);
         
         return names;
     }
     
     /**
-     * Returns a String represention of the expression.
+     * Returns a String representation of the expression.
      * <B>For debugging purpose only. Will be removed in final releases.</B>
      *
      * @return Returns a String representation.
@@ -113,12 +91,6 @@ public final class ExpressionEqual extends ExpressionBi implements CompilableExp
         
         buffer.append(p1);
         buffer.append(" == ");
-        
-        if (bytecode == 0x02)
-        {
-            buffer.append("v");
-        }
-
         buffer.append(p2);
         return buffer.toString();
     }

@@ -45,14 +45,7 @@ public final class ExpressionLess extends ExpressionBi implements CompilableExpr
      */
     public boolean evaluate(Logic logic, LogicContext logicContext)
     {
-        short p = p2;
-        
-        if (bytecode == 0x04)
-        {
-            p = logicContext.getVar(p);
-        }
-        
-        return logicContext.getVar(p1) < p;
+        return logicContext.getVar(p1) < p2;
     }
 
     public void compile(LogicCompileContext compileContext, boolean jumpOnTrue, String destination)
@@ -61,14 +54,7 @@ public final class ExpressionLess extends ExpressionBi implements CompilableExpr
         
         compileContext.compileGetVariableValue(p1);
         
-        if (bytecode == 0x04)
-        {
-            compileContext.compileGetVariableValue(p2);
-        }
-        else
-        {
-            scope.addPushConstant(p2);
-        }
+        scope.addPushConstant(p2);
         
         scope.addConditionalGoto(
             jumpOnTrue? InstructionConditionalGoto.CONDITION_CMPLT: InstructionConditionalGoto.CONDITION_CMPGE,
@@ -88,15 +74,7 @@ public final class ExpressionLess extends ExpressionBi implements CompilableExpr
         
         names[0] = "less";
         names[1] = "v" + p1;
-
-        if (bytecode == 0x04)
-        {
-            names[2] = "v" + p2;
-        }
-        else
-        {
-            names[2] = Integer.toString(p2);
-        }
+        names[2] = Integer.toString(p2);
         
         return names;
     }
@@ -110,15 +88,8 @@ public final class ExpressionLess extends ExpressionBi implements CompilableExpr
     public String toString()
     {
         StringBuffer buffer = new StringBuffer("v");
-        
         buffer.append(p1);
         buffer.append(" < ");
-        
-        if (bytecode == 0x04)
-        {
-            buffer.append("v");
-        }
-
         buffer.append(p2);
         return buffer.toString();
     }

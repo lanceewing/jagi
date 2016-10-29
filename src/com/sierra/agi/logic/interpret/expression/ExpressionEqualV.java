@@ -1,37 +1,27 @@
-/**
- *  ExpressionGreater.java
- *  Adventure Game Interpreter Logic Package
- *
- *  Created by Dr. Z.
- *  Copyright (c) 2001 Dr. Z. All rights reserved.
- */
-
 package com.sierra.agi.logic.interpret.expression;
 
-import com.sierra.agi.*;
-import com.sierra.agi.logic.*;
-import com.sierra.agi.logic.interpret.*;
-import com.sierra.agi.logic.interpret.jit.*;
-import com.sierra.jit.code.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
-/**
- * Greater Expression.
- *
- * @author  Dr. Z
- * @version 0.00.00.01
- */
-public final class ExpressionGreater extends ExpressionBi implements CompilableExpression
+import com.sierra.agi.logic.Logic;
+import com.sierra.agi.logic.LogicContext;
+import com.sierra.agi.logic.interpret.LogicReader;
+import com.sierra.agi.logic.interpret.jit.CompilableExpression;
+import com.sierra.agi.logic.interpret.jit.LogicCompileContext;
+import com.sierra.jit.code.InstructionConditionalGoto;
+import com.sierra.jit.code.Scope;
+
+public class ExpressionEqualV extends ExpressionBi implements CompilableExpression
 {
     /**
-     * Creates a new Greater Expression.
+     * Creates a new Equal Expression (V).
      *
      * @param context   Game context where this instance of the expression will be used.
      * @param stream    Logic Stream. Expression must be written in uninterpreted format.
      * @param reader    LogicReader used in the reading of this expression.
      * @param bytecode  Bytecode of the current expression.
      */
-    public ExpressionGreater(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
+    public ExpressionEqualV(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
     {
         super(stream, bytecode);
     }
@@ -45,7 +35,9 @@ public final class ExpressionGreater extends ExpressionBi implements CompilableE
      */
     public boolean evaluate(Logic logic, LogicContext logicContext)
     {
-        return logicContext.getVar(p1) > p2;
+        short p = logicContext.getVar(p2);
+        
+        return logicContext.getVar(p1) == p;
     }
 
     public void compile(LogicCompileContext compileContext, boolean jumpOnTrue, String destination)
@@ -53,11 +45,10 @@ public final class ExpressionGreater extends ExpressionBi implements CompilableE
         Scope scope = compileContext.scope;
         
         compileContext.compileGetVariableValue(p1);
-        
-        scope.addPushConstant(p2);
+        compileContext.compileGetVariableValue(p2);
         
         scope.addConditionalGoto(
-            jumpOnTrue? InstructionConditionalGoto.CONDITION_CMPGT: InstructionConditionalGoto.CONDITION_CMPLE,
+            jumpOnTrue? InstructionConditionalGoto.CONDITION_CMPEQ: InstructionConditionalGoto.CONDITION_CMPNE,
             destination);
     }
 
@@ -72,13 +63,13 @@ public final class ExpressionGreater extends ExpressionBi implements CompilableE
     {
         String[] names = new String[3];
         
-        names[0] = "greater";
+        names[0] = "equalv";
         names[1] = "v" + p1;
-        names[2] = Integer.toString(p2);
+        names[2] = "v" + p2;
         
         return names;
     }
-
+    
     /**
      * Returns a String represention of the expression.
      * <B>For debugging purpose only. Will be removed in final releases.</B>
@@ -90,7 +81,8 @@ public final class ExpressionGreater extends ExpressionBi implements CompilableE
         StringBuffer buffer = new StringBuffer("v");
         
         buffer.append(p1);
-        buffer.append(" > ");
+        buffer.append(" == ");
+        buffer.append("v");
         buffer.append(p2);
         return buffer.toString();
     }

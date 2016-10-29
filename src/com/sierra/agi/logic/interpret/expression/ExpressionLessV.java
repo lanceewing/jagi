@@ -1,5 +1,5 @@
 /**
- *  ExpressionGreater.java
+ *  ExpressionLess.java
  *  Adventure Game Interpreter Logic Package
  *
  *  Created by Dr. Z.
@@ -16,22 +16,22 @@ import com.sierra.jit.code.*;
 import java.io.*;
 
 /**
- * Greater Expression.
+ * Less Expression.
  *
  * @author  Dr. Z
  * @version 0.00.00.01
  */
-public final class ExpressionGreater extends ExpressionBi implements CompilableExpression
+public final class ExpressionLessV extends ExpressionBi implements CompilableExpression
 {
     /**
-     * Creates a new Greater Expression.
+     * Creates a new Less Expression.
      *
      * @param context   Game context where this instance of the expression will be used.
      * @param stream    Logic Stream. Expression must be written in uninterpreted format.
      * @param reader    LogicReader used in the reading of this expression.
      * @param bytecode  Bytecode of the current expression.
      */
-    public ExpressionGreater(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
+    public ExpressionLessV(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
     {
         super(stream, bytecode);
     }
@@ -45,7 +45,9 @@ public final class ExpressionGreater extends ExpressionBi implements CompilableE
      */
     public boolean evaluate(Logic logic, LogicContext logicContext)
     {
-        return logicContext.getVar(p1) > p2;
+        short p = logicContext.getVar(p2);
+
+        return logicContext.getVar(p1) < p;
     }
 
     public void compile(LogicCompileContext compileContext, boolean jumpOnTrue, String destination)
@@ -53,11 +55,10 @@ public final class ExpressionGreater extends ExpressionBi implements CompilableE
         Scope scope = compileContext.scope;
         
         compileContext.compileGetVariableValue(p1);
-        
-        scope.addPushConstant(p2);
+        compileContext.compileGetVariableValue(p2);
         
         scope.addConditionalGoto(
-            jumpOnTrue? InstructionConditionalGoto.CONDITION_CMPGT: InstructionConditionalGoto.CONDITION_CMPLE,
+            jumpOnTrue? InstructionConditionalGoto.CONDITION_CMPLT: InstructionConditionalGoto.CONDITION_CMPGE,
             destination);
     }
 
@@ -72,9 +73,9 @@ public final class ExpressionGreater extends ExpressionBi implements CompilableE
     {
         String[] names = new String[3];
         
-        names[0] = "greater";
+        names[0] = "lessv";
         names[1] = "v" + p1;
-        names[2] = Integer.toString(p2);
+        names[2] = "v" + p2;
         
         return names;
     }
@@ -90,7 +91,8 @@ public final class ExpressionGreater extends ExpressionBi implements CompilableE
         StringBuffer buffer = new StringBuffer("v");
         
         buffer.append(p1);
-        buffer.append(" > ");
+        buffer.append(" < ");
+        buffer.append("v");
         buffer.append(p2);
         return buffer.toString();
     }
