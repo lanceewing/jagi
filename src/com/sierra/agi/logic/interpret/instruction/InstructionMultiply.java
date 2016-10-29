@@ -52,16 +52,7 @@ public class InstructionMultiply extends InstructionBi
      */
     public int execute(Logic logic, LogicContext logicContext)
     {
-        short v;
-        
-        if (bytecode == 0xa6)
-        {
-            v = logicContext.getVar(p2);
-        }
-        else
-        {
-            v = p2;
-        }
+        short v = p2;
 
         v *= logicContext.getVar(p1);
 
@@ -82,18 +73,8 @@ public class InstructionMultiply extends InstructionBi
         
         names[0] = "mul";
         names[1] = "v" + p1;
-
-        switch (bytecode)
-        {
-        default:
-        case 0x05:
-            names[2] = Integer.toString(p2);
-            break;
-        case 0x06:
-            names[2] = "v" + p2;
-            break;
-        }
-
+        names[2] = Integer.toString(p2);
+            
         return names;
     }
 //#endif DEBUG

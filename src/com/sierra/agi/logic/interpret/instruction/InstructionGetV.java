@@ -1,5 +1,5 @@
 /*
- * InstructionSetCell.java
+ * InstructionGet.java
  */
 
 package com.sierra.agi.logic.interpret.instruction;
@@ -12,23 +12,20 @@ import com.sierra.jit.code.*;
 import java.io.*;
 
 /**
- * Set Loop Instruction.
+ * Get Instruction.
  *
- * <P><CODE><B>set.cell.n</B> Instruction 0x2f</CODE><BR>
- * Chooses the cell <CODE>p2</CODE> in the VIEW resource associated with the
- * object <CODE>p1</CODE>.</P>
- *
- * <P><CODE><B>set.cell.v</B> Instruction 0x30</CODE><BR>
- * Chooses the cell <CODE>v[p2]</CODE> in the VIEW resource associated with the
- * object <CODE>p1</CODE>.</P>
+ * <P><CODE><B>get.n</B> Instruction 0x5C</CODE><BR>
+ * Stores <CODE>255</CODE> in room field of an object <CODE>i[p1]</CODE>,
+ * which means that the player owns it.
+ * </P>
  *
  * @author  Dr. Z
  * @version 0.00.00.01
  */
-public class InstructionSetCell extends InstructionBi
+public class InstructionGetV extends InstructionUni
 {
-    /**
-     * Creates new Set Cell Instruction.
+    /** 
+     * Creates new Get Instruction (V).
      *
      * @param context   Game context where this instance of the instruction will be used. (ignored)
      * @param stream    Logic Stream. Instruction must be written in uninterpreted format.
@@ -36,7 +33,7 @@ public class InstructionSetCell extends InstructionBi
      * @param bytecode  Bytecode of the current instruction.
      * @throws IOException I/O Exception are throw when <CODE>stream.read()</CODE> fails.
      */
-    public InstructionSetCell(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
+    public InstructionGetV(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
     {
         super(stream, bytecode);
     }
@@ -50,9 +47,9 @@ public class InstructionSetCell extends InstructionBi
      */
     public int execute(Logic logic, LogicContext logicContext)
     {
-        short p = p2;
-        logicContext.getViewTable().setCell(p1, p);
-        return 3;
+        short p = logicContext.getVar(p1);
+        logicContext.setObject(p, LogicContext.EGO_OWNED);
+        return 2;
     }
 
 //#ifdef DEBUG
@@ -64,12 +61,11 @@ public class InstructionSetCell extends InstructionBi
      */
     public String[] getNames()
     {
-        String[] names = new String[3];
+        String[] names = new String[2];
         
-        names[0] = "set.cell";
-        names[1] = "o" + p1;
-        names[2] = Integer.toString(p2);
-
+        names[0] = "get";
+        names[1] = "vi" + p1;
+        
         return names;
     }
 //#endif DEBUG

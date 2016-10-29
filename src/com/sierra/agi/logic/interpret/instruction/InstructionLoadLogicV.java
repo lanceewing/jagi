@@ -1,10 +1,11 @@
 /*
- * InstructionSetCell.java
+ * InstructionLoadLogic.java
  */
 
 package com.sierra.agi.logic.interpret.instruction;
 
 import com.sierra.agi.*;
+import com.sierra.agi.res.*;
 import com.sierra.agi.logic.*;
 import com.sierra.agi.logic.interpret.*;
 import com.sierra.agi.logic.interpret.jit.*;
@@ -12,23 +13,21 @@ import com.sierra.jit.code.*;
 import java.io.*;
 
 /**
- * Set Loop Instruction.
+ * Load Logic Instruction.
  *
- * <P><CODE><B>set.cell.n</B> Instruction 0x2f</CODE><BR>
- * Chooses the cell <CODE>p2</CODE> in the VIEW resource associated with the
- * object <CODE>p1</CODE>.</P>
+ * <P><CODE><B>load.logic.n</B> Instruction 0x14</CODE><BR>
+ * Logic <CODE>p1</CODE> is loaded into memory.</P>
  *
- * <P><CODE><B>set.cell.v</B> Instruction 0x30</CODE><BR>
- * Chooses the cell <CODE>v[p2]</CODE> in the VIEW resource associated with the
- * object <CODE>p1</CODE>.</P>
+ * <P><CODE><B>load.logic.v</B> Instruction 0x15</CODE><BR>
+ * Logic <CODE>v[p1]</CODE> is loaded into memory.</P>
  *
  * @author  Dr. Z
  * @version 0.00.00.01
  */
-public class InstructionSetCell extends InstructionBi
+public class InstructionLoadLogicV extends InstructionUni implements Compilable
 {
-    /**
-     * Creates new Set Cell Instruction.
+    /** 
+     * Creates new Load Logic Instruction.
      *
      * @param context   Game context where this instance of the instruction will be used. (ignored)
      * @param stream    Logic Stream. Instruction must be written in uninterpreted format.
@@ -36,7 +35,7 @@ public class InstructionSetCell extends InstructionBi
      * @param bytecode  Bytecode of the current instruction.
      * @throws IOException I/O Exception are throw when <CODE>stream.read()</CODE> fails.
      */
-    public InstructionSetCell(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
+    public InstructionLoadLogicV(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
     {
         super(stream, bytecode);
     }
@@ -48,11 +47,27 @@ public class InstructionSetCell extends InstructionBi
      * @param logicContext  Logic Context used to execute the instruction.
      * @return Returns the number of byte of the uninterpreted instruction.
      */
-    public int execute(Logic logic, LogicContext logicContext)
+    public int execute(Logic logic, LogicContext logicContext) throws Exception
     {
-        short p = p2;
-        logicContext.getViewTable().setCell(p1, p);
-        return 3;
+        short p  = logicContext.getVar(p1);
+        logicContext.getCache().loadLogic(p);
+        return 2;
+    }
+
+    /**
+     * Compile the Instruction into Java Bytecode.
+     *
+     * @param compileContext Logic Compile Context.
+     */
+    public void compile(LogicCompileContext compileContext)
+    {
+        Scope scope = compileContext.scope;
+
+        scope.addLoadVariable("cache");
+
+        compileContext.compileGetVariableValue(p1);
+        
+        scope.addInvokeSpecial("com.sierra.agi.res.ResourceCache", "loadLogic", "(S)V");
     }
 
 //#ifdef DEBUG
@@ -64,12 +79,11 @@ public class InstructionSetCell extends InstructionBi
      */
     public String[] getNames()
     {
-        String[] names = new String[3];
-        
-        names[0] = "set.cell";
-        names[1] = "o" + p1;
-        names[2] = Integer.toString(p2);
+        String[] names = new String[2];
 
+        names[0] = "load.logic";
+        names[1] = "v" + p1;
+        
         return names;
     }
 //#endif DEBUG

@@ -21,7 +21,7 @@ import java.io.*;
  * @author  Dr. Z
  * @version 0.00.00.01
  */
-public class InstructionPrintAt extends Instruction
+public class InstructionPrintAtV extends Instruction
 {
     /** Bytecode */
     protected short bytecode;
@@ -42,7 +42,7 @@ public class InstructionPrintAt extends Instruction
     protected int size;
 
     /** 
-     * Creates new Print At Instruction.
+     * Creates new Print At Instruction (V).
      *
      * @param context   Game context where this instance of the instruction will be used. (ignored)
      * @param stream    Logic Stream. Instruction must be written in uninterpreted format.
@@ -50,7 +50,7 @@ public class InstructionPrintAt extends Instruction
      * @param bytecode  Bytecode of the current instruction.
      * @throws IOException I/O Exception are throw when <CODE>stream.read()</CODE> fails.
      */
-    public InstructionPrintAt(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
+    public InstructionPrintAtV(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
     {
         this.bytecode = bytecode;
         p1 = (short)stream.read();
@@ -82,6 +82,15 @@ public class InstructionPrintAt extends Instruction
         short tp2 = p2;
         short tp3 = p3;
         short tp4 = p4;
+        
+        tp1 = logicContext.getVar(tp1);
+        tp2 = logicContext.getVar(tp2);
+        tp3 = logicContext.getVar(tp3);
+        
+        if (size > 4)
+        {
+            tp4 = logicContext.getVar(tp4);
+        }
 
         (new MessageBox(logicContext.processMessage(logic.getMessageProcessed(tp1)), tp2, tp3, tp4)).show(logicContext, logicContext.getViewScreen(), true);
         return size;
@@ -109,10 +118,18 @@ public class InstructionPrintAt extends Instruction
         String[] names = new String[5];
         
         names[0] = "print.at";
-        names[1] = "m" + p1;
-        names[2] = Integer.toString(p2);
-        names[3] = Integer.toString(p3);
-        names[4] = Integer.toString(p4);
+        names[1] = "mv" + p1;
+        names[2] = "mv" + p2;
+        names[3] = "mv" + p3;
+        
+        if (size > 4)
+        {
+            names[4] = "mv" + p4;
+        }
+        else
+        {
+            names[4] = "0";
+        }
 
         return names;
     }

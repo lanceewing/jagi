@@ -49,12 +49,6 @@ public class InstructionSetPriority extends InstructionBi
     public int execute(Logic logic, LogicContext logicContext)
     {
         short p = p2;
-        
-        if (bytecode == 0x37)
-        {
-            p = logicContext.getVar(p);
-        }
-        
         logicContext.getViewTable().setPriority(p1, p);
         return 3;
     }
@@ -72,17 +66,8 @@ public class InstructionSetPriority extends InstructionBi
         
         names[0] = "set.priority";
         names[1] = "o" + p1;
-        
-        switch (bytecode)
-        {
-        case 0x36:
-            names[2] = Integer.toString(p2);
-            break;
-        case 0x37:
-            names[2] = "v" + p2;
-            break;
-        }
-        
+        names[2] = Integer.toString(p2);
+
         return names;
     }
 //#endif DEBUG

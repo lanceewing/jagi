@@ -55,12 +55,6 @@ public class InstructionCall extends InstructionUni implements Compilable
     {
         Logic logicToCall;
         short p = p1;
-        
-        if (bytecode == 0x17)
-        {
-            p = logicContext.getVar(p);
-        }
-        
         logicToCall = logicContext.getCache().getLogic(p);
         logicToCall.execute(logicContext);
         return 2;
@@ -77,14 +71,7 @@ public class InstructionCall extends InstructionUni implements Compilable
         
         scope.addLoadVariable("cache");
         
-        if (bytecode == 0x17)
-        {
-            compileContext.compileGetVariableValue(p1);
-        }
-        else
-        {
-            scope.addPushConstant(p1);
-        }
+        scope.addPushConstant(p1);
         
         scope.addInvokeVirtual("com.sierra.agi.logic.LogicContext", "getLogic", "(S)Lcom/sierra/agi/logic/Logic;");
         
@@ -104,18 +91,8 @@ public class InstructionCall extends InstructionUni implements Compilable
         String[] names = new String[2];
         
         names[0] = "call";
-        
-        switch (bytecode)
-        {
-        default:
-        case 0x16:
-            names[1] = Integer.toString(p1);
-            break;
-        case 0x17:
-            names[1] = "v" + p1;
-            break;
-        }
-        
+        names[1] = Integer.toString(p1);
+
         return names;
     }
 //#endif DEBUG

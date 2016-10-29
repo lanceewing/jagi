@@ -51,12 +51,6 @@ public class InstructionSetLoop extends InstructionBi
     public int execute(Logic logic, LogicContext logicContext)
     {
         short p = p2;
-        
-        if (bytecode == 0x2c)
-        {
-            p = logicContext.getVar(p);
-        }
-
         logicContext.getViewTable().setLoop(p1, p);
         return 3;
     }
@@ -74,17 +68,8 @@ public class InstructionSetLoop extends InstructionBi
         
         names[0] = "set.loop";
         names[1] = "o" + p1;
-        
-        switch (bytecode)
-        {
-        case 0x2b:
-            names[2] = Integer.toString(p2);
-            break;
-        case 0x2c:
-            names[2] = "v" + p2;
-            break;
-        }
-        
+        names[2] = Integer.toString(p2);
+
         return names;
     }
 //#endif DEBUG

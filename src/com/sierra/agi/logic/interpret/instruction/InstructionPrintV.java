@@ -49,10 +49,10 @@ import java.io.*;
  * @author  Dr. Z
  * @version 0.00.00.01
  */
-public class InstructionPrint extends InstructionUni
+public class InstructionPrintV extends InstructionUni
 {
     /** 
-     * Creates new Print Instruction.
+     * Creates new Print Instruction (V).
      *
      * @param context   Game context where this instance of the instruction will be used. (ignored)
      * @param stream    Logic Stream. Instruction must be written in uninterpreted format.
@@ -60,7 +60,7 @@ public class InstructionPrint extends InstructionUni
      * @param bytecode  Bytecode of the current instruction.
      * @throws IOException I/O Exception are throw when <CODE>stream.read()</CODE> fails.
      */
-    public InstructionPrint(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
+    public InstructionPrintV(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
     {
         super(stream, bytecode);
     }
@@ -74,7 +74,7 @@ public class InstructionPrint extends InstructionUni
      */
     public int execute(Logic logic, LogicContext logicContext)
     {
-        short p = p1;
+        short p = logicContext.getVar(p1);
         (new MessageBox(logicContext.processMessage(logic.getMessageProcessed(p)))).show(logicContext, logicContext.getViewScreen(), true);
         return 2;
     }
@@ -91,8 +91,8 @@ public class InstructionPrint extends InstructionUni
         String[] names = new String[2];
         
         names[0] = "print";
-        names[1] = "m" + p1;
-
+        names[1] = "mv" + p1;
+        
         return names;
     }
 //#endif DEBUG

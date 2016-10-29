@@ -43,13 +43,6 @@ public class InstructionPosition extends InstructionTri
     public int execute(Logic logic, LogicContext logicContext)
     {
         short p = p2, q = p3;
-        
-        if ((bytecode == 0x26) || (bytecode == 0x94))
-        {
-            p = logicContext.getVar(p);
-            q = logicContext.getVar(q);
-        }
-        
         logicContext.getViewTable().setPosition(p1, p, q);
         return 4;
     }
@@ -67,21 +60,9 @@ public class InstructionPosition extends InstructionTri
         
         names[0] = "position";
         names[1] = "o" + p1;
-        
-        switch (bytecode)
-        {
-        case 0x25:
-        case 0x93:
-            names[2] = Integer.toString(p2);
-            names[3] = Integer.toString(p3);
-            break;
-        case 0x26:
-        case 0x94:
-            names[2] = "v" + p2;
-            names[3] = "v" + p3;
-            break;
-        }
-        
+        names[2] = Integer.toString(p2);
+        names[3] = Integer.toString(p3);
+
         return names;
     }
 //#endif DEBUG

@@ -57,13 +57,6 @@ public class InstructionDisplay extends InstructionTri
         short tp1 = p1;
         short tp2 = p2;
         short tp3 = p3;
-        
-        if (bytecode == 0x68)
-        {
-            tp1 = logicContext.getVar(tp1);
-            tp2 = logicContext.getVar(tp2);
-            tp3 = logicContext.getVar(tp3);
-        }
 
         logicContext.getViewScreen().displayLine(tp2, tp1, logicContext.processMessage(logic.getMessageProcessed(tp3)));
         return 4;
@@ -81,21 +74,10 @@ public class InstructionDisplay extends InstructionTri
         String[] names = new String[4];
         
         names[0] = "display";
-        
-        switch (bytecode)
-        {
-        case 0x67:
-            names[1] = Integer.toString(p1);
-            names[2] = Integer.toString(p2);
-            names[3] = "m" + p3;
-            break;
-        case 0x68:
-            names[1] = "v" + p1;
-            names[2] = "v" + p2;
-            names[3] = "mv" + p3;
-            break;
-        }
-        
+        names[1] = Integer.toString(p1);
+        names[2] = Integer.toString(p2);
+        names[3] = "m" + p3;
+
         return names;
     }
 //#endif DEBUG

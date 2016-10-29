@@ -52,16 +52,7 @@ public class InstructionDivide extends InstructionBi
      */
     public int execute(Logic logic, LogicContext logicContext)
     {
-        short u, v;
-        
-        if (bytecode == 0xa6)
-        {
-            v = logicContext.getVar(p2);
-        }
-        else
-        {
-            v = p2;
-        }
+        short u, v = p2;
 
         try
         {
@@ -91,19 +82,25 @@ public class InstructionDivide extends InstructionBi
         
         names[0] = "mul";
         names[1] = "v" + p1;
-
-        switch (bytecode)
-        {
-        default:
-        case 0x05:
-            names[2] = Integer.toString(p2);
-            break;
-        case 0x06:
-            names[2] = "v" + p2;
-            break;
-        }
+        names[2] = Integer.toString(p2);
 
         return names;
+    }
+    
+    /**
+     * Returns a String representation of the expression.
+     * <B>For debugging purpose only. Will be removed in final releases.</B>
+     *
+     * @return Returns a String representation.
+     */
+    public String toString()
+    {
+        StringBuffer buffer = new StringBuffer("v");
+        
+        buffer.append(p1);
+        buffer.append(" /= ");
+        buffer.append(p2);
+        return buffer.toString();
     }
 //#endif DEBUG
 }

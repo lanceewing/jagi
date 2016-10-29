@@ -24,10 +24,10 @@ import java.io.*;
  * @author  Dr. Z
  * @version 0.00.00.01
  */
-public class InstructionNewRoom extends InstructionUni implements Compilable
+public class InstructionNewRoomV extends InstructionUni implements Compilable
 {
     /**
-     * Creates a new New Room Instruction.
+     * Creates a new New Room Instruction (V).
      *
      * @param context   Game context where this instance of the instruction will be used. (ignored)
      * @param stream    Logic Stream. Instruction must be written in uninterpreted format.
@@ -35,7 +35,7 @@ public class InstructionNewRoom extends InstructionUni implements Compilable
      * @param bytecode  Bytecode of the current instruction.
      * @throws IOException I/O Exception are throw when <CODE>stream.read()</CODE> fails.
      */
-    public InstructionNewRoom(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
+    public InstructionNewRoomV(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
     {
         super(stream, bytecode);
     }
@@ -71,7 +71,7 @@ public class InstructionNewRoom extends InstructionUni implements Compilable
      */
     public int execute(Logic logic, LogicContext logicContext) throws Exception
     {
-        short p = p1;
+        short p = logicContext.getVar(p1);
         logicContext.newRoom(p);
         return 2;
     }
@@ -87,8 +87,8 @@ public class InstructionNewRoom extends InstructionUni implements Compilable
 
         scope.addLoadVariable("logicContext");
 
-        scope.addPushConstant(p1);
-        
+        compileContext.compileGetVariableValue(p1);
+
         scope.addInvokeSpecial("com.sierra.agi.logic.LogicContext", "newRoom", "(S)V");
     }
 
@@ -104,7 +104,7 @@ public class InstructionNewRoom extends InstructionUni implements Compilable
         String[] names = new String[2];
         
         names[0] = "new.room";
-        names[1] = Integer.toString(p1);
+        names[1] = "v" + p1;
 
         return names;
     }

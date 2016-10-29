@@ -98,5 +98,18 @@ public class InstructionIncrement extends InstructionUni implements Compilable
         names[1] = "v" + p1;
         return names;
     }
+    
+    /**
+     * Returns a String representation of the expression.
+     * <B>For debugging purpose only. Will be removed in final releases.</B>
+     *
+     * @return Returns a String representation.
+     */
+    public String toString()
+    {
+        StringBuffer buffer = new StringBuffer("++v");
+        buffer.append(p1);
+        return buffer.toString();
+    }
 //#endif DEBUG
 }

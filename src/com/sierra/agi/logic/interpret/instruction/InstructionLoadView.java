@@ -50,12 +50,6 @@ public class InstructionLoadView extends InstructionUni implements Compilable
     public int execute(Logic logic, LogicContext logicContext) throws Exception
     {
         short p = p1;
-        
-        if (bytecode == 0x1f)
-        {
-            p = logicContext.getVar(p);
-        }
-        
         logicContext.getCache().loadView(p);
         return 2;
     }
@@ -72,14 +66,7 @@ public class InstructionLoadView extends InstructionUni implements Compilable
 
         scope.addLoadVariable("cache");
         
-        if (bytecode == 0x1f)
-        {
-            compileContext.compileGetVariableValue(p1);
-        }
-        else
-        {
-            scope.addPushConstant(p1);
-        }
+        scope.addPushConstant(p1);
         
         scope.addInvokeSpecial("com.sierra.agi.res.ResourceCache", "loadView", "(S)V");
     }
@@ -96,18 +83,8 @@ public class InstructionLoadView extends InstructionUni implements Compilable
         String[] names = new String[2];
 
         names[0] = "load.view";
-        
-        switch (bytecode)
-        {
-        default:
-        case 0x1e:
-            names[1] = Integer.toString(p1);
-            break;
-        case 0x1f:
-            names[1] = "v" + p1;
-            break;
-        }
-        
+        names[1] = Integer.toString(p1);
+
         return names;
     }
 //#endif DEBUG

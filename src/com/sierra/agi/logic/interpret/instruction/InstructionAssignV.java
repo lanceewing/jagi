@@ -1,5 +1,5 @@
 /*
- * InstructionDecrement.java
+ * InstructionAssign.java
  */
 
 package com.sierra.agi.logic.interpret.instruction;
@@ -12,31 +12,37 @@ import com.sierra.jit.code.*;
 import java.io.*;
 
 /**
- * Decrement Instruction.
+ * Assign Instruction.
  *
- * The value of the variable v[p1] is decremented by one,
- * i.e. <CODE>v[p1] = v[p1] - 1</CODE>. If the value is <CODE>0</CODE>,
- * it is left unchanged.
+ * <P><CODE><B>assign.n</B> Instruction 0x03</CODE><BR>
+ * Variable <CODE>p1</CODE> is assigned the value <CODE>p2</CODE>,
+ * i.e. <CODE>v[p1] = p2</CODE>.
+ * </P>
+ *
+ * <P><CODE><B>assign.v</B> Instruction 0x04</CODE><BR>
+ * Variable <CODE>p1</CODE> is assigned the value of variable <CODE>p2</CODE>,
+ * i.e. <CODE>v[p1] = v[p2]</CODE>.
+ * </P>
  *
  * @author  Dr. Z
  * @version 0.00.00.01
  */
-public class InstructionDecrement extends InstructionUni implements Compilable
+public class InstructionAssignV extends InstructionBi implements Compilable
 {
-    /**
-     * Creates a new Decrement Instruction.
+    /** 
+     * Creates new Assign Instruction (V).
      *
      * @param context   Game context where this instance of the instruction will be used. (ignored)
      * @param stream    Logic Stream. Instruction must be written in uninterpreted format.
      * @param reader    LogicReader used in the reading of this instruction. (ignored)
      * @param bytecode  Bytecode of the current instruction.
-     * @throws IOException I/O Exception are throw when <CODE>stream.read()</CODE> fails.
+     * @throws IOException I/O Exception are throw when stream.read() fails.
      */
-    public InstructionDecrement(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
+    public InstructionAssignV(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
     {
         super(stream, bytecode);
     }
-    
+
     /**
      * Execute the Instruction.
      *
@@ -46,16 +52,11 @@ public class InstructionDecrement extends InstructionUni implements Compilable
      */
     public int execute(Logic logic, LogicContext logicContext)
     {
-        short vn = logicContext.getVar(p1);
-        
-        if (vn > 0)
-        {
-            logicContext.setVar(p1, (short)(vn - 1));
-        }
-        
-        return 2;
+        short v = logicContext.getVar(p2);
+        logicContext.setVar(p1, v);
+        return getSize();
     }
-
+    
     /**
      * Compile the Instruction into Java Bytecode.
      *
@@ -63,38 +64,30 @@ public class InstructionDecrement extends InstructionUni implements Compilable
      */
     public void compile(LogicCompileContext compileContext)
     {
-        Scope  scope = compileContext.scope;
-        String end   = scope.generateLabel();
-
-        compileContext.compileGetVariableValue(p1);
-        scope.addDuplicate();
-        scope.addStoreVariable("temp");
-        
-        scope.addIfEqualZero(end);
-        
+        Scope scope = compileContext.scope;
+       
         scope.addLoadVariable("logicContext");
         scope.addPushConstant(p1);
-        scope.addLoadVariable("temp");
-        scope.addPushConstant(1);
-        scope.addIntegerSubstract();
+
+        compileContext.compileGetVariableValue(p2);
+
         scope.addInvokeSpecial("com.sierra.agi.logic.LogicContext", "setVar", "(SS)V");
-        
-        scope.addLabel(end);
     }
 
 //#ifdef DEBUG
     /**
-     * Retreive the AGI Instruction name and parameters.
-     * <B>For debugging purpose only. Will be removed in final releases.</B>
+     * Retreive the textual name of the instruction.
      *
      * @return Returns the textual name of the instruction.
      */
     public String[] getNames()
     {
-        String[] names = new String[2];
+        String[] names = new String[3];
         
-        names[0] = "dec";
+        names[0] = "assign";
         names[1] = "v" + p1;
+        names[2] = "v" + p2;
+
         return names;
     }
     
@@ -106,8 +99,11 @@ public class InstructionDecrement extends InstructionUni implements Compilable
      */
     public String toString()
     {
-        StringBuffer buffer = new StringBuffer("--v");
+        StringBuffer buffer = new StringBuffer("v");
+        
         buffer.append(p1);
+        buffer.append(" = v");
+        buffer.append(p2);
         return buffer.toString();
     }
 //#endif DEBUG

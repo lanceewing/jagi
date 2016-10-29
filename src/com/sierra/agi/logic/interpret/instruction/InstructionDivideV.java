@@ -1,5 +1,5 @@
 /*
- * InstructionSetCell.java
+ * InstructionDivide.java
  */
 
 package com.sierra.agi.logic.interpret.instruction;
@@ -12,23 +12,25 @@ import com.sierra.jit.code.*;
 import java.io.*;
 
 /**
- * Set Loop Instruction.
+ * Divide Instruction.
  *
- * <P><CODE><B>set.cell.n</B> Instruction 0x2f</CODE><BR>
- * Chooses the cell <CODE>p2</CODE> in the VIEW resource associated with the
- * object <CODE>p1</CODE>.</P>
+ * <P><CODE><B>div.n</B> Instruction 0xa7</CODE><BR>
+ * The value of variable <CODE>v[p1]</CODE> is divided by <CODE>p2</CODE>,
+ * i.e. <CODE>v[p1] /= p2</CODE>.
+ * </P>
  *
- * <P><CODE><B>set.cell.v</B> Instruction 0x30</CODE><BR>
- * Chooses the cell <CODE>v[p2]</CODE> in the VIEW resource associated with the
- * object <CODE>p1</CODE>.</P>
+ * <P><CODE><B>div.v</B> Instruction 0xa8</CODE><BR>
+ * The value of variable <CODE>v[p1]</CODE> is divided by <CODE>v[p2]</CODE>,
+ * i.e. <CODE>v[p1] /= v[p2]</CODE>.
+ * </P>
  *
  * @author  Dr. Z
  * @version 0.00.00.01
  */
-public class InstructionSetCell extends InstructionBi
+public class InstructionDivideV extends InstructionBi
 {
-    /**
-     * Creates new Set Cell Instruction.
+    /** 
+     * Creates new Divide Instruction (V).
      *
      * @param context   Game context where this instance of the instruction will be used. (ignored)
      * @param stream    Logic Stream. Instruction must be written in uninterpreted format.
@@ -36,11 +38,11 @@ public class InstructionSetCell extends InstructionBi
      * @param bytecode  Bytecode of the current instruction.
      * @throws IOException I/O Exception are throw when <CODE>stream.read()</CODE> fails.
      */
-    public InstructionSetCell(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
+    public InstructionDivideV(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
     {
         super(stream, bytecode);
     }
-    
+
     /**
      * Execute the Instruction.
      *
@@ -50,8 +52,20 @@ public class InstructionSetCell extends InstructionBi
      */
     public int execute(Logic logic, LogicContext logicContext)
     {
-        short p = p2;
-        logicContext.getViewTable().setCell(p1, p);
+        short u, v = logicContext.getVar(p2);
+
+        try
+        {
+            u  = logicContext.getVar(p1);
+            u /= v;
+            
+            logicContext.setVar(p1, (short)(u & 0xff));
+        }
+        catch (ArithmeticException aex)
+        {
+            logicContext.setVar(p1, (short)0);
+        }
+        
         return 3;
     }
 
@@ -66,11 +80,27 @@ public class InstructionSetCell extends InstructionBi
     {
         String[] names = new String[3];
         
-        names[0] = "set.cell";
-        names[1] = "o" + p1;
-        names[2] = Integer.toString(p2);
+        names[0] = "mul";
+        names[1] = "v" + p1;
+        names[2] = "v" + p2;
 
         return names;
+    }
+    
+    /**
+     * Returns a String representation of the expression.
+     * <B>For debugging purpose only. Will be removed in final releases.</B>
+     *
+     * @return Returns a String representation.
+     */
+    public String toString()
+    {
+        StringBuffer buffer = new StringBuffer("v");
+        
+        buffer.append(p1);
+        buffer.append(" *= v");
+        buffer.append(p2);
+        return buffer.toString();
     }
 //#endif DEBUG
 }

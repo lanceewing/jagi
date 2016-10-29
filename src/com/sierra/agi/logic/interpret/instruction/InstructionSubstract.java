@@ -54,16 +54,7 @@ public class InstructionSubstract extends InstructionBi
      */
     public int execute(Logic logic, LogicContext logicContext)
     {
-        short v;
-        
-        if (bytecode == 0x08)
-        {
-            v = logicContext.getVar(p2);
-        }
-        else
-        {
-            v = p2;
-        }
+        short v = p2;
 
         if (v != 0)
         {
@@ -88,14 +79,7 @@ public class InstructionSubstract extends InstructionBi
         scope.addDuplicateLong();
         scope.addInvokeSpecial("com.sierra.agi.logic.LogicContext", "getVar", "(S)S");
 
-        if (bytecode == 0x06)
-        {
-            compileContext.compileGetVariableValue(p2);
-        }
-        else
-        {
-            scope.addPushConstant(p2);
-        }
+        scope.addPushConstant(p2);
 
         scope.addIntegerSubstract();
         scope.addPushConstant(0xff);
@@ -117,19 +101,25 @@ public class InstructionSubstract extends InstructionBi
         
         names[0] = "sub";
         names[1] = "v" + p1;
-
-        switch (bytecode)
-        {
-        default:
-        case 0x07:
-            names[2] = Integer.toString(p2);
-            break;
-        case 0x08:
-            names[2] = "v" + p2;
-            break;
-        }
+        names[2] = Integer.toString(p2);
 
         return names;
+    }
+    
+    /**
+     * Returns a String representation of the expression.
+     * <B>For debugging purpose only. Will be removed in final releases.</B>
+     *
+     * @return Returns a String representation.
+     */
+    public String toString()
+    {
+        StringBuffer buffer = new StringBuffer("v");
+        
+        buffer.append(p1);
+        buffer.append(" -= ");
+        buffer.append(p2);
+        return buffer.toString();
     }
 //#endif DEBUG
 }

@@ -1,5 +1,5 @@
 /*
- * InstructionDecrement.java
+ * InstructionSubstract.java
  */
 
 package com.sierra.agi.logic.interpret.instruction;
@@ -12,19 +12,27 @@ import com.sierra.jit.code.*;
 import java.io.*;
 
 /**
- * Decrement Instruction.
+ * Substract Instruction.
  *
- * The value of the variable v[p1] is decremented by one,
- * i.e. <CODE>v[p1] = v[p1] - 1</CODE>. If the value is <CODE>0</CODE>,
- * it is left unchanged.
+ * <P><CODE><B>sub.n</B> Instruction 0x07</CODE><BR>
+ * The value of variable <CODE>v[p1]</CODE> is decremented by <CODE>p2</CODE>,
+ * i.e. <CODE>v[p1] -= p2</CODE>.
+ * </P>
+ *
+ * <P><CODE><B>sub.v</B> Instruction 0x08</CODE><BR>
+ * The value of variable <CODE>v[p1]</CODE> is decremented by <CODE>v[p2]</CODE>,
+ * i.e. <CODE>v[p1] -= v[p2]</CODE>.
+ * </P>
+ *
+ * If the value is lesser than <CODE>0</CODE> the result wraps (so <CODE>1 - 2 == 255</CODE>).
  *
  * @author  Dr. Z
  * @version 0.00.00.01
  */
-public class InstructionDecrement extends InstructionUni implements Compilable
+public class InstructionSubstractV extends InstructionBi
 {
-    /**
-     * Creates a new Decrement Instruction.
+    /** 
+     * Creates new Substract Instruction (V).
      *
      * @param context   Game context where this instance of the instruction will be used. (ignored)
      * @param stream    Logic Stream. Instruction must be written in uninterpreted format.
@@ -32,11 +40,11 @@ public class InstructionDecrement extends InstructionUni implements Compilable
      * @param bytecode  Bytecode of the current instruction.
      * @throws IOException I/O Exception are throw when <CODE>stream.read()</CODE> fails.
      */
-    public InstructionDecrement(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
+    public InstructionSubstractV(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
     {
         super(stream, bytecode);
     }
-    
+
     /**
      * Execute the Instruction.
      *
@@ -46,14 +54,15 @@ public class InstructionDecrement extends InstructionUni implements Compilable
      */
     public int execute(Logic logic, LogicContext logicContext)
     {
-        short vn = logicContext.getVar(p1);
-        
-        if (vn > 0)
+        short v = logicContext.getVar(p2);
+
+        if (v != 0)
         {
-            logicContext.setVar(p1, (short)(vn - 1));
+            v -= logicContext.getVar(p1);
+            logicContext.setVar(p1, (short)(v & 0xff));
         }
         
-        return 2;
+        return 3;
     }
 
     /**
@@ -63,23 +72,20 @@ public class InstructionDecrement extends InstructionUni implements Compilable
      */
     public void compile(LogicCompileContext compileContext)
     {
-        Scope  scope = compileContext.scope;
-        String end   = scope.generateLabel();
-
-        compileContext.compileGetVariableValue(p1);
-        scope.addDuplicate();
-        scope.addStoreVariable("temp");
-        
-        scope.addIfEqualZero(end);
-        
+        Scope scope = compileContext.scope;
+       
         scope.addLoadVariable("logicContext");
         scope.addPushConstant(p1);
-        scope.addLoadVariable("temp");
-        scope.addPushConstant(1);
+        scope.addDuplicateLong();
+        scope.addInvokeSpecial("com.sierra.agi.logic.LogicContext", "getVar", "(S)S");
+
+        compileContext.compileGetVariableValue(p2);
+
         scope.addIntegerSubstract();
-        scope.addInvokeSpecial("com.sierra.agi.logic.LogicContext", "setVar", "(SS)V");
+        scope.addPushConstant(0xff);
+        scope.addIntegerAnd();
         
-        scope.addLabel(end);
+        scope.addInvokeSpecial("com.sierra.agi.logic.LogicContext", "setVar", "(SS)V");
     }
 
 //#ifdef DEBUG
@@ -87,14 +93,16 @@ public class InstructionDecrement extends InstructionUni implements Compilable
      * Retreive the AGI Instruction name and parameters.
      * <B>For debugging purpose only. Will be removed in final releases.</B>
      *
-     * @return Returns the textual name of the instruction.
+     * @return Returns the textual names of the instruction.
      */
     public String[] getNames()
     {
-        String[] names = new String[2];
+        String[] names = new String[3];
         
-        names[0] = "dec";
+        names[0] = "sub";
         names[1] = "v" + p1;
+        names[2] = "v" + p2;
+
         return names;
     }
     
@@ -106,8 +114,11 @@ public class InstructionDecrement extends InstructionUni implements Compilable
      */
     public String toString()
     {
-        StringBuffer buffer = new StringBuffer("--v");
+        StringBuffer buffer = new StringBuffer("v");
+        
         buffer.append(p1);
+        buffer.append(" -= v");
+        buffer.append(p2);
         return buffer.toString();
     }
 //#endif DEBUG

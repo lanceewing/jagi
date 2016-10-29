@@ -53,12 +53,6 @@ public class InstructionPut extends InstructionBi
     public int execute(Logic logic, LogicContext logicContext)
     {
         short p = p2;
-        
-        if (bytecode == 0x60)
-        {
-            p = logicContext.getVar(p);
-        }
-
         logicContext.setObject(p1, p);
         return 3;
     }
@@ -76,17 +70,8 @@ public class InstructionPut extends InstructionBi
         
         names[0] = "put";
         names[1] = "i" + p1;
-        
-        switch (bytecode)
-        {
-        case 0x5F:
-            names[2] = Integer.toString(p2);
-            break;
-        case 0x60:
-            names[2] = "v" + p2;
-            break;
-        }
-        
+        names[2] = Integer.toString(p2);
+
         return names;
     }
 //#endif DEBUG

@@ -48,12 +48,6 @@ public class InstructionGet extends InstructionUni
     public int execute(Logic logic, LogicContext logicContext)
     {
         short p = p1;
-        
-        if (bytecode == 0x5d)
-        {
-            p = logicContext.getVar(p);
-        }
-
         logicContext.setObject(p, LogicContext.EGO_OWNED);
         return 2;
     }
@@ -70,17 +64,8 @@ public class InstructionGet extends InstructionUni
         String[] names = new String[2];
         
         names[0] = "get";
-        
-        switch (bytecode)
-        {
-        case 0x5c:
-            names[1] = "i" + p1;
-            break;
-        case 0x5d:
-            names[1] = "vi" + p1;
-            break;
-        }
-        
+        names[1] = "i" + p1;
+
         return names;
     }
 //#endif DEBUG

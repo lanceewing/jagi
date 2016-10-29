@@ -57,17 +57,6 @@ public class InstructionAddToPic extends InstructionSept
         short tp6 = p6;
         short tp7 = p7;
         
-        if (bytecode == 0x7b)
-        {
-            tp1 = logicContext.getVar(tp1);
-            tp2 = logicContext.getVar(tp2);
-            tp3 = logicContext.getVar(tp3);
-            tp4 = logicContext.getVar(tp4);
-            tp5 = logicContext.getVar(tp5);
-            tp6 = logicContext.getVar(tp6);
-            tp7 = logicContext.getVar(tp7);
-        }
-        
         logicContext.getViewTable().addToPic(tp1, tp2, tp3, tp4, tp5, (byte)tp6, tp7);
         return 8;
     }
@@ -84,29 +73,14 @@ public class InstructionAddToPic extends InstructionSept
         String[] names = new String[8];
         
         names[0] = "add.to.pic";
-        
-        switch (bytecode)
-        {
-        case 0x7a:
-            names[1] = Integer.toString(p1);
-            names[2] = Integer.toString(p2);
-            names[3] = Integer.toString(p3);
-            names[4] = Integer.toString(p4);
-            names[5] = Integer.toString(p5);
-            names[6] = Integer.toString(p6);
-            names[7] = Integer.toString(p7);
-            break;
-        case 0x7b:
-            names[1] = "v" + p1;
-            names[2] = "v" + p2;
-            names[3] = "v" + p3;
-            names[4] = "v" + p4;
-            names[5] = "v" + p5;
-            names[6] = "v" + p6;
-            names[7] = "v" + p7;
-            break;
-        }
-        
+        names[1] = Integer.toString(p1);
+        names[2] = Integer.toString(p2);
+        names[3] = Integer.toString(p3);
+        names[4] = Integer.toString(p4);
+        names[5] = Integer.toString(p5);
+        names[6] = Integer.toString(p6);
+        names[7] = Integer.toString(p7);
+
         return names;
     }
 //#endif DEBUG

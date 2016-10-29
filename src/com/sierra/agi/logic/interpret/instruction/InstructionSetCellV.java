@@ -12,7 +12,7 @@ import com.sierra.jit.code.*;
 import java.io.*;
 
 /**
- * Set Loop Instruction.
+ * Set Loop Instruction (V)
  *
  * <P><CODE><B>set.cell.n</B> Instruction 0x2f</CODE><BR>
  * Chooses the cell <CODE>p2</CODE> in the VIEW resource associated with the
@@ -25,7 +25,7 @@ import java.io.*;
  * @author  Dr. Z
  * @version 0.00.00.01
  */
-public class InstructionSetCell extends InstructionBi
+public class InstructionSetCellV extends InstructionBi
 {
     /**
      * Creates new Set Cell Instruction.
@@ -36,7 +36,7 @@ public class InstructionSetCell extends InstructionBi
      * @param bytecode  Bytecode of the current instruction.
      * @throws IOException I/O Exception are throw when <CODE>stream.read()</CODE> fails.
      */
-    public InstructionSetCell(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
+    public InstructionSetCellV(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
     {
         super(stream, bytecode);
     }
@@ -50,7 +50,7 @@ public class InstructionSetCell extends InstructionBi
      */
     public int execute(Logic logic, LogicContext logicContext)
     {
-        short p = p2;
+        short p = logicContext.getVar(p2);
         logicContext.getViewTable().setCell(p1, p);
         return 3;
     }
@@ -68,8 +68,8 @@ public class InstructionSetCell extends InstructionBi
         
         names[0] = "set.cell";
         names[1] = "o" + p1;
-        names[2] = Integer.toString(p2);
-
+        names[2] = "v" + p2;
+        
         return names;
     }
 //#endif DEBUG

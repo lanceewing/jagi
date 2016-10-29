@@ -50,12 +50,6 @@ public class InstructionSetView extends InstructionBi
     public int execute(Logic logic, LogicContext logicContext)
     {
         short p = p2;
-        
-        if (bytecode == 0x2a)
-        {
-            p = logicContext.getVar(p);
-        }
-
         logicContext.getViewTable().setView(p1, p);
         return 3;
     }
@@ -72,17 +66,8 @@ public class InstructionSetView extends InstructionBi
         
         names[0] = "set.view";
         names[1] = "o" + p1;
-        
-        switch (bytecode)
-        {
-        case 0x29:
-            names[2] = Integer.toString(p2);
-            break;
-        case 0x2a:
-            names[2] = "v" + p2;
-            break;
-        }
-        
+        names[2] = Integer.toString(p2);
+
         return names;
     }
 //#endif DEBUG

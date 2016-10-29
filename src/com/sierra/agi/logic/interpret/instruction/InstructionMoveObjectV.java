@@ -31,10 +31,10 @@ import java.io.*;
  * @author  Dr. Z
  * @version 0.00.00.01
  */
-public class InstructionMoveObject extends InstructionPent
+public class InstructionMoveObjectV extends InstructionPent
 {
     /** 
-     * Creates new Move Object Instruction.
+     * Creates new Move Object Instruction (V).
      *
      * @param context   Game context where this instance of the instruction will be used. (ignored)
      * @param stream    Logic Stream. Instruction must be written in uninterpreted format.
@@ -42,7 +42,7 @@ public class InstructionMoveObject extends InstructionPent
      * @param bytecode  Bytecode of the current instruction.
      * @throws IOException I/O Exception are throw when <CODE>stream.read()</CODE> fails.
      */
-    public InstructionMoveObject(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
+    public InstructionMoveObjectV(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
     {
         super(stream, bytecode);
     }
@@ -57,9 +57,12 @@ public class InstructionMoveObject extends InstructionPent
     public int execute(Logic logic, LogicContext logicContext)
     {
         com.sierra.agi.view.ViewTable viewTable = logicContext.getViewTable();
-    
-        viewTable.moveObject(p1, p2, p3, p4, p5);
-        
+        viewTable.moveObject(
+                    p1,
+                    logicContext.getVar(p2),
+                    logicContext.getVar(p3),
+                    logicContext.getVar(p4),
+                    p5);
         return 6;
     }
 
@@ -77,10 +80,10 @@ public class InstructionMoveObject extends InstructionPent
         names[0] = "move.object";
         names[1] = "o" + p1;
         names[5] = "f" + p5;
-        names[2] = Integer.toString(p2);
-        names[3] = Integer.toString(p3);
-        names[4] = Integer.toString(p4);
-
+        names[2] = "v" + p2;
+        names[3] = "v" + p3;
+        names[4] = "v" + p4;
+        
         return names;
     }
 //#endif DEBUG
