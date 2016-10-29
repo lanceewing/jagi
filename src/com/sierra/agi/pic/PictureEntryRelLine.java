@@ -45,19 +45,19 @@ public class PictureEntryRelLine extends PictureEntryMulti
 {
     public void draw(PictureContext pictureContext)
     {
-        Enumeration enum = points.elements();
+        Enumeration en = points.elements();
         Point       p;
         int         x1, y1, x2, y2;
         
-        p  = (Point)enum.nextElement();
+        p  = (Point)en.nextElement();
         x1 = x2 = p.x;
         y1 = y2 = p.y;
         
         pictureContext.putPixel(x1, y1);
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            p   = (Point)enum.nextElement();
+            p   = (Point)en.nextElement();
             x2 += p.x;
             y2 += p.y;
             

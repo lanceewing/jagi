@@ -38,14 +38,14 @@ public class PictureEntryFill extends PictureEntryMulti
     public void draw(PictureContext pictureContext)
     {
         Point       current;
-        Enumeration enum    = points.elements();
+        Enumeration en    = points.elements();
         PointStack  stack   = new PointStack(200, 200);
         int         width   = pictureContext.width  - 1;
         int         height  = pictureContext.height - 1;
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            current = (Point)enum.nextElement();
+            current = (Point)en.nextElement();
             
             stack.push(current.x, current.y);
 

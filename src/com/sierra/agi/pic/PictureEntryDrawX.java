@@ -37,24 +37,24 @@ public class PictureEntryDrawX extends PictureEntryMulti
 {
     public void draw(PictureContext pictureContext)
     {
-        Enumeration enum = points.elements();
+        Enumeration en = points.elements();
         int         x1, y1, x2, y2;
         boolean     b = true;
         Point       p;
         
-        p = (Point)enum.nextElement();
+        p = (Point)en.nextElement();
         x1 = x2 = p.x;
         y1 = y2 = p.y;
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
             if (b)
             {
-                x2 = ((Integer)enum.nextElement()).intValue();
+                x2 = ((Integer)en.nextElement()).intValue();
             }
             else
             {
-                y2 = ((Integer)enum.nextElement()).intValue();
+                y2 = ((Integer)en.nextElement()).intValue();
             }
             
             pictureContext.drawLine(x1, y1, x2, y2);

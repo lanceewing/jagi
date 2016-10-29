@@ -38,12 +38,12 @@ public class Picture extends Object
     
     public void draw(PictureContext pictureContext) throws PictureException
     {
-        Enumeration  enum = entries.elements();
+        Enumeration  en = entries.elements();
         PictureEntry entry;
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            entry = (PictureEntry)enum.nextElement();
+            entry = (PictureEntry)en.nextElement();
             entry.draw(pictureContext);
         }
     }

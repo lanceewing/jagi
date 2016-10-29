@@ -50,14 +50,14 @@ public abstract class ResourceProviderZip extends Object implements ResourceProv
     
     protected static void convert(DataOutputStream outData, ResourceProvider provider, byte resType) throws ResourceException, IOException
     {
-        short[] enum = provider.enum(resType);
+        short[] en = provider.enumerate(resType);
         int     index;
         
-        outData.writeInt(enum.length);
+        outData.writeInt(en.length);
         
-        for (index = 0; index < enum.length; index++)
+        for (index = 0; index < en.length; index++)
         {
-            outData.writeShort(enum[index]);
+            outData.writeShort(en[index]);
         } 
     }
 }

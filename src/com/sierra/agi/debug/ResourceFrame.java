@@ -192,7 +192,7 @@ public class ResourceFrame extends JFrame implements MouseListener, ActionListen
         
         try
         {
-            list = provider.enum(resType);
+            list = provider.enumerate(resType);
             
             if ((list == null) || (list.length == 0))
             {

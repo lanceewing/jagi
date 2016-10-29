@@ -175,7 +175,7 @@ public class LogicDebug extends LogicInterpreter
     
     public void addBreakpoint(int instructionNumber)
     {
-        Enumeration enum;
+        Enumeration en;
         LogicEvent  event;
     
         if (!breakpoints.get(instructionNumber))
@@ -183,19 +183,19 @@ public class LogicDebug extends LogicInterpreter
             breakpoints.set(instructionNumber);
             breakpointsActivated.set(instructionNumber);
         
-            enum  = listeners.elements();
+            en  = listeners.elements();
             event = new LogicEvent(this, instructionNumber, LogicEvent.TYPE_ADDED);
             
-            while (enum.hasMoreElements())
+            while (en.hasMoreElements())
             {
-                ((LogicListener)enum.nextElement()).logicBreakpointAdded(event);
+                ((LogicListener)en.nextElement()).logicBreakpointAdded(event);
             }
         }
     }
     
     public void removeBreakpoint(int instructionNumber)
     {
-        Enumeration enum;
+        Enumeration en;
         LogicEvent  event;
     
         if (breakpoints.get(instructionNumber))
@@ -203,19 +203,19 @@ public class LogicDebug extends LogicInterpreter
             breakpoints.clear(instructionNumber);
             breakpointsActivated.clear(instructionNumber);
         
-            enum  = listeners.elements();
+            en  = listeners.elements();
             event = new LogicEvent(this, instructionNumber, LogicEvent.TYPE_REMOVED);
             
-            while (enum.hasMoreElements())
+            while (en.hasMoreElements())
             {
-                ((LogicListener)enum.nextElement()).logicBreakpointRemoved(event);
+                ((LogicListener)en.nextElement()).logicBreakpointRemoved(event);
             }
         }
     }
     
     public void enableBreakpoint(int instructionNumber)
     {
-        Enumeration enum;
+        Enumeration en;
         LogicEvent  event;
 
         if (!breakpointsActivated.get(instructionNumber))
@@ -223,38 +223,38 @@ public class LogicDebug extends LogicInterpreter
             breakpoints.set(instructionNumber);
             breakpointsActivated.set(instructionNumber);
         
-            enum  = listeners.elements();
+            en  = listeners.elements();
             event = new LogicEvent(this, instructionNumber, LogicEvent.TYPE_REMOVED);
             
-            while (enum.hasMoreElements())
+            while (en.hasMoreElements())
             {
-                ((LogicListener)enum.nextElement()).logicBreakpointRemoved(event);
+                ((LogicListener)en.nextElement()).logicBreakpointRemoved(event);
             }
         }
     }
 
     public void disableBreakpoint(int instructionNumber)
     {
-        Enumeration enum;
+        Enumeration en;
         LogicEvent  event;
 
         if (breakpointsActivated.get(instructionNumber))
         {
             breakpointsActivated.clear(instructionNumber);
         
-            enum  = listeners.elements();
+            en  = listeners.elements();
             event = new LogicEvent(this, instructionNumber, LogicEvent.TYPE_REMOVED);
             
-            while (enum.hasMoreElements())
+            while (en.hasMoreElements())
             {
-                ((LogicListener)enum.nextElement()).logicBreakpointRemoved(event);
+                ((LogicListener)en.nextElement()).logicBreakpointRemoved(event);
             }
         }
     }
 
     public void disableBreakpoint(int instructionNumber, boolean force)
     {
-        Enumeration enum;
+        Enumeration en;
         LogicEvent  event;
 
         if (force)
@@ -266,12 +266,12 @@ public class LogicDebug extends LogicInterpreter
         {
             breakpointsActivated.clear(instructionNumber);
 
-            enum  = listeners.elements();
+            en  = listeners.elements();
             event = new LogicEvent(this, instructionNumber, LogicEvent.TYPE_REMOVED);
             
-            while (enum.hasMoreElements())
+            while (en.hasMoreElements())
             {
-                ((LogicListener)enum.nextElement()).logicBreakpointRemoved(event);
+                ((LogicListener)en.nextElement()).logicBreakpointRemoved(event);
             }
         }
     }

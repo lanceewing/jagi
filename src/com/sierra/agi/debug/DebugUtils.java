@@ -42,10 +42,10 @@ public abstract class DebugUtils extends Object
         long    total   = runtime.totalMemory();
         long    free    = runtime.freeMemory();
 
-        out.print("TotalÊmemory: ");
+        out.print("Totalï¿½memory: ");
         out.print(total);
         out.println(" bytes");
-        out.print("FreeÊmemory:  ");
+        out.print("Freeï¿½memory:  ");
         out.print(free);
         out.println(" bytes");
         out.println();
@@ -54,12 +54,12 @@ public abstract class DebugUtils extends Object
     public static void printEnvironmentInfo(PrintStream out)
     {
         Properties  props = System.getProperties();
-        Enumeration enum  = props.propertyNames();
+        Enumeration en  = props.propertyNames();
         String      s;
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            s = (String)enum.nextElement();
+            s = (String)en.nextElement();
             
             out.print(s);
             out.print("=");

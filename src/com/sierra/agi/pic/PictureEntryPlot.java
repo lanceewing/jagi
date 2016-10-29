@@ -69,7 +69,7 @@ public class PictureEntryPlot extends PictureEntryMulti
     
     public void drawPlot(PictureContext pictureContext)
     {
-        Enumeration enum      = points.elements();
+        Enumeration en      = points.elements();
 	int         circlePos = 0;
         int         bitPos;
 	int         x, y, x1, y1, penSize, penSizeTrue;
@@ -80,9 +80,9 @@ public class PictureEntryPlot extends PictureEntryMulti
         penSize     = (pictureContext.penStyle & 0x07);
         penSizeTrue = penSize;
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            p         = (int[])enum.nextElement();
+            p         = (int[])en.nextElement();
             circlePos = 0;
             bitPos    = splatterStart[p[0]];
             x         = p[1];
@@ -131,7 +131,7 @@ public class PictureEntryPlot extends PictureEntryMulti
     
     public void drawPoints(PictureContext pictureContext)
     {
-        Enumeration enum      = points.elements();
+        Enumeration en      = points.elements();
 	int         circlePos;
 	int         x, y, x1, y1, penSize, penSizeTrue;
         boolean     circle;
@@ -141,9 +141,9 @@ public class PictureEntryPlot extends PictureEntryMulti
         penSize     = (pictureContext.penStyle & 0x07);
         penSizeTrue = penSize;
 
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            p = (Point)enum.nextElement();
+            p = (Point)en.nextElement();
             x = p.x;
             y = p.y;
             circlePos = 0;

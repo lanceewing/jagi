@@ -24,14 +24,14 @@ public final class LogicContextDebug extends LogicContext
     
     public void breakpointReached()
     {
-        Enumeration       enum  = listeners.elements();
+        Enumeration       en  = listeners.elements();
         LogicContextEvent event = new LogicContextEvent(this);
     
         breaked = true;
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            ((LogicContextListener)enum.nextElement()).logicBreakpointReached(event);
+            ((LogicContextListener)en.nextElement()).logicBreakpointReached(event);
         }
     }
     
@@ -44,12 +44,12 @@ public final class LogicContextDebug extends LogicContext
             thread = new Thread(this);
             thread.start();
 
-            Enumeration       enum  = listeners.elements();
+            Enumeration       en  = listeners.elements();
             LogicContextEvent event = new LogicContextEvent(this);
     
-            while (enum.hasMoreElements())
+            while (en.hasMoreElements())
             {
-                ((LogicContextListener)enum.nextElement()).logicResumed(event);
+                ((LogicContextListener)en.nextElement()).logicResumed(event);
             }
             
             return true;
@@ -75,14 +75,14 @@ public final class LogicContextDebug extends LogicContext
 
         if (!ensureExecution())
         {
-            Enumeration       enum  = listeners.elements();
+            Enumeration       en  = listeners.elements();
             LogicContextEvent event = new LogicContextEvent(this);
             
             ((LogicStackEntry)peekLogic()).command = LogicStackEntry.RUNNING;
     
-            while (enum.hasMoreElements())
+            while (en.hasMoreElements())
             {
-                ((LogicContextListener)enum.nextElement()).logicResumed(event);
+                ((LogicContextListener)en.nextElement()).logicResumed(event);
             }
         }
     }

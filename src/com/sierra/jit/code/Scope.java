@@ -92,21 +92,21 @@ public class Scope extends Object
 
     protected void compileVariables(CompileContext context)
     {
-        Enumeration enum = variables.keys();
+        Enumeration en = variables.keys();
         Object      key; 
 
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            key = enum.nextElement();
+            key = en.nextElement();
             
             context.addVariable(this, (String)key, (String)variables.get(key));
         }
         
-        enum = content.elements();
+        en = content.elements();
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            key = enum.nextElement();
+            key = en.nextElement();
             
             if (key instanceof Scope)
             {
@@ -117,14 +117,14 @@ public class Scope extends Object
     
     protected int compileInstructions(CompileContext context, int pc, int stack)
     {
-        Enumeration enum  = content.elements();
+        Enumeration en  = content.elements();
         int         begin = pc;
         int         max   = context.getMaxStack();
         Object      key;
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            key = enum.nextElement();
+            key = en.nextElement();
             
             if (key instanceof Scope)
             {
@@ -157,12 +157,12 @@ public class Scope extends Object
     
     protected void compileExceptionTable(CompileContext context)
     {
-        Enumeration enum  = content.elements();
+        Enumeration en  = content.elements();
         Object      key;
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            key = enum.nextElement();
+            key = en.nextElement();
             
             if (key instanceof Scope)
             {
@@ -174,12 +174,12 @@ public class Scope extends Object
     protected int compileBinary(CompileContext context, int pc) throws IOException
     {
         DataOutputStream out  = context.getOutput();
-        Enumeration      enum = content.elements();
+        Enumeration      en = content.elements();
         Object           key;
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            key = enum.nextElement();
+            key = en.nextElement();
             
             if (key instanceof Scope)
             {

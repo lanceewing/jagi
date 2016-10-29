@@ -40,12 +40,12 @@ public class ScopeArgument extends Scope
 
     protected void compileVariables(CompileContext context)
     {
-        Enumeration enum = parameters.elements();
+        Enumeration en = parameters.elements();
         String[]    s;
 
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            s = (String[])enum.nextElement();
+            s = (String[])en.nextElement();
             context.addVariable(this, s[0], s[1]);
         }
         

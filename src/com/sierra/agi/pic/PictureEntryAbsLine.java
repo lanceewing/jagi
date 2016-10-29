@@ -29,14 +29,14 @@ public class PictureEntryAbsLine extends PictureEntryMulti
 {
     public void draw(PictureContext pictureContext)
     {
-        Enumeration enum = points.elements();
+        Enumeration en = points.elements();
         Point       p1, p2;
         
-        p1 = (Point)enum.nextElement();
+        p1 = (Point)en.nextElement();
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            p2 = (Point)enum.nextElement();
+            p2 = (Point)en.nextElement();
             pictureContext.drawLine(p1.x, p1.y, p2.x, p2.y);
             p1 = p2;
         }

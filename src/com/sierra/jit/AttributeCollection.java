@@ -22,14 +22,14 @@ public class AttributeCollection extends Object
 
     public void compile(DataOutputStream outs) throws IOException
     {
-        Enumeration enum;
+        Enumeration en;
     
         outs.writeShort(attributes.size());
-        enum = attributes.elements();
+        en = attributes.elements();
     
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            ((Attribute)enum.nextElement()).compile(outs);
+            ((Attribute)en.nextElement()).compile(outs);
         }
     }
 
@@ -45,12 +45,12 @@ public class AttributeCollection extends Object
 
     public int getSize()
     {
-        Enumeration enum = attributes.elements();
+        Enumeration en = attributes.elements();
         int         size = 2;
     
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            size += ((Attribute)enum.nextElement()).getSize() + 6;
+            size += ((Attribute)en.nextElement()).getSize() + 6;
         }
         
         return size;

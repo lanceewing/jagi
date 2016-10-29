@@ -97,12 +97,12 @@ public class WordViewer extends JFrame implements ListSelectionListener
     protected Word[] loadWords()
     {
         int         i, c = words.getWordCount();
-        Enumeration enum = words.words();
+        Enumeration en = words.words();
         Word[]      o    = new Word[c];
         
         for (i = 0; i < c; i++)
         {
-            o[i] = (Word)enum.nextElement();
+            o[i] = (Word)en.nextElement();
         }
         
         Arrays.sort(o);

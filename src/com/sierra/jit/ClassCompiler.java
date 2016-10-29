@@ -88,7 +88,7 @@ public class ClassCompiler extends Object
     public void compile(OutputStream out) throws IOException
     {
         DataOutputStream outs;
-        Enumeration      enum;
+        Enumeration      en;
         
         if (out instanceof DataOutputStream)
         {
@@ -108,35 +108,35 @@ public class ClassCompiler extends Object
         outs.writeShort((short)superClass); // super
 
         outs.writeShort(interfaces.size()); // Interface Count
-        enum = interfaces.elements();
+        en = interfaces.elements();
 
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            outs.writeShort(((Integer)enum.nextElement()).shortValue());
+            outs.writeShort(((Integer)en.nextElement()).shortValue());
         }
 
         outs.writeShort(fields.size()); // Field Count
-        enum = fields.elements();
+        en = fields.elements();
 
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            ((Field)enum.nextElement()).compile(outs);
+            ((Field)en.nextElement()).compile(outs);
         }
 
         outs.writeShort(methods.size()); // Method Count
-        enum = methods.elements();
+        en = methods.elements();
 
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            ((Method)enum.nextElement()).compile(outs);
+            ((Method)en.nextElement()).compile(outs);
         }
 
         outs.writeShort(attributes.size()); // Attribute Count
-        enum = attributes.elements();
+        en = attributes.elements();
 
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            ((Attribute)enum.nextElement()).compile(outs);
+            ((Attribute)en.nextElement()).compile(outs);
         }
     }
 

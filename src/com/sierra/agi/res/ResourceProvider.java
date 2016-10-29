@@ -69,7 +69,7 @@ public interface ResourceProvider
      * @param  resType Resource type
      * @return Returns an array containing the resource numbers.
      */
-    public short[] enum(byte resType) throws ResourceException;
+    public short[] enumerate(byte resType) throws ResourceException;
 
     /**
      * Retreive the size in bytes of the specified resource.

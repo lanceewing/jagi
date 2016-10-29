@@ -66,7 +66,7 @@ public class Code extends Attribute
 
     public void compile(DataOutputStream outs) throws IOException
     {
-        Enumeration enum;
+        Enumeration en;
         Vector      exceptions;
         
         super.compile(outs);
@@ -79,12 +79,12 @@ public class Code extends Attribute
         outs.write(context.getData());
         
         exceptions = context.getExceptions();
-        enum       = exceptions.elements();
+        en       = exceptions.elements();
         outs.writeShort(exceptions.size());
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            ((ExceptionTableEntry)enum.nextElement()).compile(outs);
+            ((ExceptionTableEntry)en.nextElement()).compile(outs);
         }
         
         attributes.compile(outs);

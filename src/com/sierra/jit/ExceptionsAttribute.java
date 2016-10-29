@@ -26,15 +26,15 @@ public class ExceptionsAttribute extends Attribute
     public void compile(DataOutputStream outs) throws IOException
     {
         Integer     in = null;
-        Enumeration enum;
+        Enumeration en;
 
         super.compile(outs);
         outs.writeShort(exceptions.size());
-        enum = exceptions.elements();
+        en = exceptions.elements();
 
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            in = (Integer)enum.nextElement();
+            in = (Integer)en.nextElement();
             outs.writeShort(in.shortValue());
         }
     }

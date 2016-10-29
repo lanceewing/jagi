@@ -137,7 +137,7 @@ public class ResourceProviderV2 extends Object implements ResourceProvider
      * @param  resType Resource type
      * @return Array containing the resource numbers.
      */
-    public short[] enum(byte resType) throws ResourceException
+    public short[] enumerate(byte resType) throws ResourceException
     {
         validateType(resType);
         

@@ -64,12 +64,12 @@ public final class ExpressionOr extends Expression implements CompilableExpressi
      */
     public boolean evaluate(Logic logic, LogicContext logicContext) throws Exception
     {
-        Enumeration enum = contained.elements();
+        Enumeration en = contained.elements();
         Expression  expression;
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            expression = (Expression)enum.nextElement();
+            expression = (Expression)en.nextElement();
             
             if (expression.evaluate(logic, logicContext))
             {
@@ -152,15 +152,15 @@ public final class ExpressionOr extends Expression implements CompilableExpressi
     public String toString()
     {
         String      s    = "(";
-        Enumeration enum = getContainedExpressions();
+        Enumeration en = getContainedExpressions();
         Expression  expression;
         
-        while (enum.hasMoreElements())
+        while (en.hasMoreElements())
         {
-            expression = (Expression)enum.nextElement();
+            expression = (Expression)en.nextElement();
             s += expression.toString();
             
-            if (enum.hasMoreElements())
+            if (en.hasMoreElements())
             {
                 s += " || ";
             }
