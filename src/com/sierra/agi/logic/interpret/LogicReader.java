@@ -43,9 +43,19 @@ public class LogicReader extends Object
         expressionTable      = new Properties();
         this.engineEmulation = engineEmulation;
         
+        String versionStr = String.format("%04X", engineEmulation);
+        
         try
         {
-            instructionTable.load(getClass().getResourceAsStream("instruction.conf"));
+            // Use the engineEmulation value (i.e. the interpreter version) to see if 
+            // there is a version specific instruction mapping conf file.
+            InputStream is = null;
+            for (int i=versionStr.length(); i >= 0 && is == null; i--) {
+                String suffix = versionStr.substring(0, i);
+                suffix = ((suffix.length() > 0? "_" : "") + suffix);
+                is = getClass().getResourceAsStream("instruction" + suffix + ".conf");
+            }
+            instructionTable.load(is);
         }
         catch (IOException ioex)
         {
@@ -53,7 +63,15 @@ public class LogicReader extends Object
 
         try
         {
-            expressionTable.load(getClass().getResourceAsStream("expression.conf"));
+            // Use the engineEmulation value (i.e. the interpreter version) to see if 
+            // there is a version specific expression mapping conf file.
+            InputStream is = null;
+            for (int i=versionStr.length(); i >= 0 && is == null; i--) {
+                String suffix = versionStr.substring(0, i);
+                suffix = ((suffix.length() > 0? "_" : "") + suffix);
+                is = getClass().getResourceAsStream("expression" + suffix + ".conf");
+            }
+            expressionTable.load(is);
         }
         catch (IOException ioex)
         {
@@ -77,6 +95,7 @@ public class LogicReader extends Object
         }
         catch (Exception e)
         {
+            e.printStackTrace(System.out);
         }
         
         return readMessages(b);
@@ -97,6 +116,8 @@ public class LogicReader extends Object
         expressionByte  = Integer.toHexString((int)bytecode);
         expressionClass = expressionTable.getProperty(expressionByte);
 
+        System.out.println("expressionByte: " + expressionByte + ", expressionClass: " + expressionClass);
+        
         if (expressionClass == null)
         {
             throw new UnknownExpressionException(expressionByte);
@@ -161,8 +182,12 @@ public class LogicReader extends Object
         Constructor    cons;
         Object         o[];
         
+        System.out.println("Reading instruction for bytecode: " + bytecode);
+        
         instructionByte  = Integer.toHexString((int)bytecode);
         instructionClass = instructionTable.getProperty(instructionByte);
+        
+        System.out.println("instructionByte: " + instructionByte + ", instructionClass: " + instructionClass);
 
         if (instructionClass == null)
         {
