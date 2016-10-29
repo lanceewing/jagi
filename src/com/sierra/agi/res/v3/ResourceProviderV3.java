@@ -268,16 +268,16 @@ public class ResourceProviderV3 extends com.sierra.agi.res.v2.ResourceProviderV2
             String s1 = ((File)o1).getName();
             String s2 = ((File)o2).getName();
         
-            if (s1.endsWith("dir"))
+            if (s1.toLowerCase().endsWith("dir"))
             {
-                if (!s2.endsWith("dir"))
+                if (!s2.toLowerCase().endsWith("dir"))
                 {
                     return -1;
                 }
             }
             else
             {
-                if (s2.endsWith("dir"))
+                if (s2.toLowerCase().endsWith("dir"))
                 {
                     return 1;
                 }
