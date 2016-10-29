@@ -1,5 +1,5 @@
 # jagi
-JAGI is a fork of Dr Zoltan's Java AGI engine that can be found on sourceforge here:
+JAGI is a virtual "fork" of Dr Zoltan's Java AGI engine that can be found on sourceforge here:
 
 https://sourceforge.net/projects/agi/
 
