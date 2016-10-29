@@ -1,0 +1,22 @@
+Adventure Game Interpreter and Debugger
+
+Copyright (C) 2001-2002, Dr. Z
+Copyright (C) 1984-1989, Sierra On-Line Inc.  (http://www.sierra.com/)
+
+Parts of this software is based on the Sarien Project source code. (http://sarien.sourceforge.net/)
+Parts of this software is based on AGIL source code.               (http://www.elite.za.net/)
+Parts of this software is based on Sierra Adventure Game Interprerter specications.
+
+Special Thanks to:
+  Peter Kelly
+  Claudio Matsuoka
+  All Sarien Maintainers
+  All AGIL Maintainers
+
+This software is not endorsed or sponsorised by Sierra On-Line or any of their
+division. This software is provided AS-IS. There is no warranty and no support.
+Nor the creator, nor Sierra On-Line may be held responsible for damages to your
+system.
+
+This software and his source code is release under the GNU Public License (GPL).
+(See http://www.gnu.org/licenses/gpl.txt for more details)
