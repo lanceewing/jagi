@@ -12,6 +12,7 @@ import com.sierra.agi.logic.*;
 import com.sierra.agi.logic.debug.*;
 import com.sierra.agi.logic.interpret.*;
 import com.sierra.agi.logic.interpret.instruction.Instruction;
+import com.sierra.agi.res.ResourceCache;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -33,28 +34,28 @@ public class LogicComponent extends JComponent implements MouseListener, LogicLi
     protected static Image breakpointd;
     protected static Image pointer;
 
-    public LogicComponent()
+    public LogicComponent(ResourceCache cache)
     {
-        init();
+        init(cache);
         setLogic(null);
         addMouseListener(this);
     }
 
-    public LogicComponent(LogicDebug logic)
+    public LogicComponent(ResourceCache cache, LogicDebug logic)
     {
-        init();
+        init(cache);
         setLogic(logic);
         addMouseListener(this);
     }
 
-    protected void init()
+    protected void init(ResourceCache cache)
     {
         Class thisClass = getClass();
         
         setBackground(Color.white);
         setFont(new Font("Monospaced", Font.PLAIN, 12));
 
-        setLogicEvaluator(new LogicEvaluator());
+        setLogicEvaluator(new LogicEvaluator(cache));
 
         synchronized (thisClass)
         {
