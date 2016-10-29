@@ -269,13 +269,38 @@ public class ResourceProviderV2 extends Object implements ResourceProvider
     
     protected File getVolumeFile(int vol) throws IOException
     {
-        File file = new File(path, "vol." + Integer.toString(vol));
+        File file = getGameFile(path, "vol." + Integer.toString(vol));
         
         if (!file.exists())
         {
             throw new FileNotFoundException("File " + file.getPath() + " can't be found.");
         }
 
+        return file;
+    }
+    
+    /**
+     * To account for different platforms, where there may or may not be a case
+     * sensitive file system, and where the game files may or may not have been
+     * copied from another platform, we attempt here to look for the requested
+     * game file firstly as-is, then in uppercase form, and then in lowercase.
+     * 
+     * @param path The File that represents the folder that contains the game files.
+     * @param fileName The name of the file to get.
+     * 
+     * @return A File representing the game file.
+     */
+    protected File getGameFile(File path, String fileName) 
+    {
+        File file = new File(path, fileName);
+        if (!file.exists()) 
+        {
+            file = new File(path, fileName.toUpperCase());
+            if (!file.exists()) 
+            {
+                file = new File(path, fileName.toLowerCase());
+            }
+        }
         return file;
     }
     
@@ -286,22 +311,22 @@ public class ResourceProviderV2 extends Object implements ResourceProvider
         switch (resType)
         {
         case ResourceProvider.TYPE_OBJECT:
-            file = new File(path, "object");
+            file = getGameFile(path, "object");
             break;
         case ResourceProvider.TYPE_WORD:
-            file = new File(path, "words.tok");
+            file = getGameFile(path, "words.tok");
             break;
         case ResourceProvider.TYPE_LOGIC:
-            file = new File(path, "logdir");
+            file = getGameFile(path, "logdir");
             break;
         case ResourceProvider.TYPE_PICTURE:
-            file = new File(path, "picdir");
+            file = getGameFile(path, "picdir");
             break;
         case ResourceProvider.TYPE_SOUND:
-            file = new File(path, "snddir");
+            file = getGameFile(path, "snddir");
             break;
         case ResourceProvider.TYPE_VIEW:
-            file = new File(path, "viewdir");
+            file = getGameFile(path, "viewdir");
             break;
         default:
             return null;
@@ -385,7 +410,7 @@ public class ResourceProviderV2 extends Object implements ResourceProvider
         
         while (true)
         {
-            volf = new File(path, "vol." + Integer.toString(i));
+            volf = getGameFile(path, "vol." + Integer.toString(i));
             
             if (volf.exists())
             {
@@ -467,8 +492,8 @@ public class ResourceProviderV2 extends Object implements ResourceProvider
         
         c       = 0;
         dir     = new File[2];
-        dir[0]  = new File(path, "object");
-        dir[1]  = new File(path, "words.tok");
+        dir[0]  = getGameFile(path, "object");
+        dir[1]  = getGameFile(path, "words.tok");
 
         for (i = 0; i < entries.length; i++)
         {
