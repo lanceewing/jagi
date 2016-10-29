@@ -10,21 +10,28 @@ package com.sierra.agi.debug.logic;
 
 import java.io.*;
 import java.util.*;
+
+import com.sierra.agi.inv.InventoryObject;
 import com.sierra.agi.logic.Logic;
 import com.sierra.agi.logic.interpret.LogicInterpreter;
 import com.sierra.agi.logic.interpret.instruction.Instruction;
 import com.sierra.agi.logic.interpret.instruction.InstructionIf;
 import com.sierra.agi.logic.interpret.instruction.InstructionGoto;
 import com.sierra.agi.logic.interpret.instruction.InstructionMoving;
+import com.sierra.agi.res.ResourceCache;
+import com.sierra.agi.res.ResourceException;
+import com.sierra.agi.word.Word;
 
 public class LogicEvaluator extends Object
 {
-    protected Vector     listeners = new Vector();
+    protected Vector listeners = new Vector();
     protected Properties props;
+    protected ResourceCache cache;
     
-    public LogicEvaluator()
+    public LogicEvaluator(ResourceCache cache)
     {
-        props = createDefault();
+        this.cache = cache;
+        this.props = createDefault();
     }
     
     public void addLogicEvaluatorListener(LogicEvaluatorListener listener)
@@ -69,43 +76,25 @@ public class LogicEvaluator extends Object
 
     public String evaluateInstruction(Logic logic, int ip, Instruction instruction)
     {
-        String[]     names = instruction.getNames();
-        StringBuffer buffer;
-        int          i;
-        
-        if (names.length == 1)
-        {
-            return names[0];
-        }
-        
-        buffer = new StringBuffer(names[0]);
+        String[] names = instruction.getNames();
+        StringBuffer buffer = new StringBuffer();
         
         if (instruction instanceof InstructionIf)
         {
+            buffer.append(names[0]);
             evaluateExpression(logic, ip, (InstructionIf)instruction, names[2], buffer);
         }
-        else
+        else if (instruction instanceof InstructionGoto)
         {
-            buffer.append('(');
-            
-            if (instruction instanceof InstructionGoto)
+            buffer.append(names[0]);
+            buffer.append(Integer.toHexString(ip + ((InstructionGoto)instruction).getAddress() + instruction.getSize()));
+        }
+        else {
+            StringTokenizer tokenizer = new StringTokenizer(instruction.toString(), " ,()", true);
+            while (tokenizer.hasMoreTokens())
             {
-                buffer.append(Integer.toHexString(ip + ((InstructionGoto)instruction).getAddress() + instruction.getSize()));
+                buffer.append(evaluateToken(logic, tokenizer.nextToken()));
             }
-            else
-            {
-                for (i = 1; i < names.length; i++)
-                {
-                    if (i != 1)
-                    {
-                        buffer.append(',');
-                    }
-
-                    buffer.append(evaluateToken(logic, names[i]));
-                }
-            }
-
-            buffer.append(')');
         }
     
         return buffer.toString();
@@ -122,7 +111,33 @@ public class LogicEvaluator extends Object
 
         try
         {
-            props.load(getClass().getResourceAsStream("LogicEvaluator.conf"));
+            // Use the engineEmulation value (i.e. the interpreter version) to see if 
+            // there is a version specific conf file for flag, variable and view object names.
+            InputStream is = null;
+            String versionStr = String.format("%04X", cache.getResourceProvider().getConfiguration().engineEmulation);
+            for (int i=versionStr.length(); i >= 0 && is == null; i--) {
+                String suffix = versionStr.substring(0, i);
+                suffix = ((suffix.length() > 0? "_" : "") + suffix);
+                is = getClass().getResourceAsStream("LogicEvaluator" + suffix + ".conf");
+            }
+            
+            props.load(is);
+            
+            // Remove any mappings for blank values. This allows for the conf file to
+            // have a placeholder key without yet knowing what the value should be.
+            List<String> propsToRemove = new ArrayList<String>();
+            for (Object propName : props.keySet()) {
+                String propValue = (String)props.get(propName);
+                if (propValue.trim().isEmpty()) {
+                    // Need to store these in a separate collection so as to avoid a
+                    // concurrent modification exception. We remove in a separate loop.
+                    propsToRemove.add((String)propName);
+                }
+            }
+            for (String propName : propsToRemove) {
+                props.remove(propName);
+            }
+            
         }
         catch (IOException ioex)
         {
@@ -155,6 +170,47 @@ public class LogicEvaluator extends Object
                 
                 s = props.getProperty(s, s);
                 return t + s;
+            
+            case 'i':
+                try {
+                    t = s.substring(i + 1);
+                    i = Integer.parseInt(t);
+
+                    InventoryObject item = cache.getObjects().getObject((short)i);
+                    if (item != null) {
+                        return item.getName();
+                    } else {
+                        return s;
+                    }
+                } catch (IOException e) {
+                    return s;
+                } catch (ResourceException e) {
+                    return s;
+                } catch (NumberFormatException e) {
+                    return s;
+                }
+                
+            case 'w':
+                try  {
+                    t = s.substring(i + 1);
+                    i = Integer.parseInt(t);
+                    
+                    Word word = cache.getWords().getWordByNumber(i);
+                    if (word != null) {
+                        return word.text;
+                    } else {
+                        return s;
+                    }
+                } 
+                catch (ResourceException e) {
+                    return s;
+                } 
+                catch (IOException e)  {
+                    return s;
+                } 
+                catch (NumberFormatException e) {
+                    return s;
+                }            
                 
             case 'm':
                 try
