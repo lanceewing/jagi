@@ -12,6 +12,8 @@ import com.sierra.agi.debug.logic.*;
 import com.sierra.agi.logic.*;
 import com.sierra.agi.logic.debug.*;
 import com.sierra.agi.logic.interpret.*;
+import com.sierra.agi.res.ResourceCache;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -22,13 +24,13 @@ public class LogicViewer extends JFrame implements ActionListener
 {
     protected LogicComponent component;
 
-    public LogicViewer(String title, Logic logic)
+    public LogicViewer(ResourceCache cache, String title, Logic logic)
     {
         super(title);
     
         JScrollPane pane;
         
-        component = new LogicComponent((LogicDebug)logic);
+        component = new LogicComponent(cache, (LogicDebug)logic);
         pane      = new JScrollPane(component);
         pane.setPreferredSize(new Dimension(350, 350));
         

@@ -33,7 +33,7 @@ public class ContextDebugger extends JFrame implements LogicContextListener, Act
     {
         super("Adventure Game Debugger");
         
-        logicComponent = new LogicComponent();
+        logicComponent = new LogicComponent(logicContext.getCache());
         variableModel  = new DefaultTableModel(new Object[256][2], new String[] {"Variable","Value"});
         
         JSplitPane  bottomPane = new JSplitPane();

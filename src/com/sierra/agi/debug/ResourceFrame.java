@@ -388,7 +388,7 @@ public class ResourceFrame extends JFrame implements MouseListener, ActionListen
         
         if (o == null)
         {
-            s = new LogicViewer(title, logic);
+            s = new LogicViewer(cache, title, logic);
             s.addWindowListener(new ResourceWindowListener(logics, logic));
             positionWindow(s);
             logics.put(logic, s);
