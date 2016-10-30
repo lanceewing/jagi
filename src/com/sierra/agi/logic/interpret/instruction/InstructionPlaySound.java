@@ -56,7 +56,7 @@ public class InstructionPlaySound extends InstructionBi
      */
     public String[] getNames()
     {
-        return new String[] {"play.sound", Integer.toString(p1), "f" + p2};
+        return new String[] {"sound", Integer.toString(p1), "f" + p2};
     }
 //#endif DEBUG
 }
