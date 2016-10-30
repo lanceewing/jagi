@@ -67,11 +67,11 @@ public abstract class Instruction extends Object
         
         buff.append(names[0]);
         
+        buff.append("(");
         if (names.length > 1)
         {
             int i;
             
-            buff.append("(");
             for (i = 1; i < names.length; i++)
             {
                 if (i != 1)
@@ -81,8 +81,8 @@ public abstract class Instruction extends Object
                 
                 buff.append(names[i]);
             }
-            buff.append(")");
         }
+        buff.append(")");
         
         return buff.toString();
     }
