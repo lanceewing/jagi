@@ -31,6 +31,6 @@ public class InstructionUnknown3 extends InstructionTri
 
     @Override
     public String[] getNames() {
-        return new String[] {"follow.ego", Integer.toString(p1), Integer.toString(p2), Integer.toString(p3)};
+        return new String[] {"unknown", Integer.toString(p1), Integer.toString(p2), Integer.toString(p3)};
     }
 }
