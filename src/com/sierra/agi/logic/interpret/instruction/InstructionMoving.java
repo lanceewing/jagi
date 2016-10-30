@@ -29,26 +29,31 @@ public abstract class InstructionMoving extends Instruction
 
     /**
      * Determine Destination Instruction Number
+     * 
+     * @param instructionNum Instruction number of the branching instruction.
+     * @param instructionSizes Array containing the size in bytes of each Instruction in the Logic.
      */
-    public int getDestination(int in, int[] sizes)
+    public int getDestination(int instructionNum, int[] instructionSizes)
     {
-        int gotoFactor = getAddress() + sizes[in];
+        int gotoFactor = getAddress() + instructionSizes[instructionNum];
 
         if (gotoFactor > 0)
         {
-            while (gotoFactor != 0)
+            // If the jump is forward, scan forward from the size array.
+            while (gotoFactor > 0)
             {
-                gotoFactor -= sizes[in++];
+                gotoFactor -= instructionSizes[instructionNum++];
             }
         }
         else
         {
-            while (gotoFactor != 0)
+            // If the jump is backward, scan back through the size array.
+            while (gotoFactor < 0)
             {
-                gotoFactor += sizes[--in];
+                gotoFactor += instructionSizes[--instructionNum];
             }
         }
         
-        return in;
+        return instructionNum;
     }
 }
