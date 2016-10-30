@@ -116,7 +116,7 @@ public class LogicReader extends Object
         expressionByte  = Integer.toHexString((int)bytecode);
         expressionClass = expressionTable.getProperty(expressionByte);
 
-        System.out.println("expressionByte: " + expressionByte + ", expressionClass: " + expressionClass);
+        System.out.println("  expressionByte: " + expressionByte + ", expressionClass: " + expressionClass);
         
         if (expressionClass == null)
         {
@@ -181,13 +181,11 @@ public class LogicReader extends Object
         Class          clazz;
         Constructor    cons;
         Object         o[];
-        
-        System.out.println("Reading instruction for bytecode: " + bytecode);
-        
+
         instructionByte  = Integer.toHexString((int)bytecode);
         instructionClass = instructionTable.getProperty(instructionByte);
         
-        System.out.println("instructionByte: " + instructionByte + ", instructionClass: " + instructionClass);
+        System.out.println("  instructionByte: " + instructionByte + ", instructionClass: " + instructionClass);
 
         if (instructionClass == null)
         {
@@ -247,11 +245,13 @@ public class LogicReader extends Object
     public void readInstructions(Vector instructions, InputStream stream) throws IOException, LogicException
     {
         Instruction instruct;
+        int byteCount = 0;
         
         try
         {
             while (true)
             {
+                System.out.print(String.format("Offset: %04X, Ins#: %02d -", byteCount, instructions.size() + 1));
                 instruct = readInstruction(stream);
                 
                 if (instruct == null)
@@ -267,6 +267,10 @@ public class LogicReader extends Object
                 }
                 
                 instructions.add(instruct);
+                
+                System.out.println("   " + instruct.toString());
+                
+                byteCount += instruct.getSize();
             }
         }
         catch (EOFException ex)
