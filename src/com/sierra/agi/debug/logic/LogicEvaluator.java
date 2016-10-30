@@ -22,16 +22,38 @@ import com.sierra.agi.res.ResourceCache;
 import com.sierra.agi.res.ResourceException;
 import com.sierra.agi.word.Word;
 
-public class LogicEvaluator extends Object
+/**
+ * A class that evaluates the test and action commands in a LOGIC for the purpose
+ * of generating a decompiled script.
+ * 
+ * @author Dr. Z.
+ */
+public class LogicEvaluator 
 {
+    /**
+     * Currently not used, and purpose unknown.
+     */
     protected Vector listeners = new Vector();
-    protected Properties props;
-    protected ResourceCache cache;
     
-    public LogicEvaluator(ResourceCache cache)
+    /**
+     * Holds mappings between variable/flag/aniobj numbers and a more readable name.
+     */
+    protected Properties tokenMappings;
+    
+    /**
+     * The ResourceCache from where to get things like word and inv item text.
+     */
+    protected ResourceCache resourceCache;
+    
+    /**
+     * Constructor for LogicEvaluator.
+     * 
+     * @param resourceCache The ResourceCache from where to get things like word and inv item text.
+     */
+    public LogicEvaluator(ResourceCache resourceCache)
     {
-        this.cache = cache;
-        this.props = createDefault();
+        this.resourceCache = resourceCache;
+        this.tokenMappings = loadTokenMappings();
     }
     
     public void addLogicEvaluatorListener(LogicEvaluatorListener listener)
@@ -74,7 +96,7 @@ public class LogicEvaluator extends Object
         return buffer.toString();
     }
 
-    public String evaluateInstruction(Logic logic, int ip, Instruction instruction)
+    protected String evaluateInstruction(Logic logic, int ip, Instruction instruction)
     {
         String[] names = instruction.getNames();
         StringBuffer buffer = new StringBuffer();
@@ -100,12 +122,26 @@ public class LogicEvaluator extends Object
         return buffer.toString();
     }
     
-    public String evaluateExpression(String expression)
-    {
-        return expression;
-    }
-    
-    protected Properties createDefault()
+    /**
+     * Loads from a conf file the mappings to be used when converting numeric parameter
+     * tokens in to a more readable form. For things like words, inventory items, and 
+     * messages, there are resources from which we can read to lookup the appropriate
+     * data to show for the parameter, but for variables, flags, and animated objects,
+     * there is no such data in the game itself that tells us what they originally 
+     * were.
+     * 
+     * We're lucky that recently Sierra's original AGI documentation turned up, so 
+     * the original names of some of the "system" variables and flags can be loaded
+     * from a mapping file. That is essentially what this mention does. But it needs
+     * to support muliple AGI interpreter versions. The flag and variable usage was
+     * different in AGI v1 when compared with AGI v3. So for this reason, the loading 
+     * of the mapping file is done in a way that uses the game's interpreter version 
+     * to look for a version specific conf file prior to falling back on the common 
+     * case.  
+     * 
+     * @return A Properties object containing the loaded token mappings.
+     */
+    protected Properties loadTokenMappings()
     {
         Properties props = new Properties();
 
@@ -114,7 +150,7 @@ public class LogicEvaluator extends Object
             // Use the engineEmulation value (i.e. the interpreter version) to see if 
             // there is a version specific conf file for flag, variable and view object names.
             InputStream is = null;
-            String versionStr = String.format("%04X", cache.getResourceProvider().getConfiguration().engineEmulation);
+            String versionStr = String.format("%04X", resourceCache.getResourceProvider().getConfiguration().engineEmulation);
             for (int i=versionStr.length(); i >= 0 && is == null; i--) {
                 String suffix = versionStr.substring(0, i);
                 suffix = ((suffix.length() > 0? "_" : "") + suffix);
@@ -146,6 +182,14 @@ public class LogicEvaluator extends Object
         return props;
     }
     
+    /**
+     * 
+     * 
+     * @param logic
+     * @param s
+     * 
+     * @return
+     */
     public String evaluateToken(Logic logic, String s)
     {
         int    i;
@@ -155,84 +199,95 @@ public class LogicEvaluator extends Object
         {
             switch (s.charAt(i))
             {
-            case 'v':
-            case 'f':
-            case 'o':
-                if (i > 0)
-                {
-                    t = s.substring(0, i);
-                    s = s.substring(i);
-                }
-                else
-                {
-                    t = "";
-                }
+                // Variables, flags, and animated objects.
+                case 'v':
+                case 'f':
+                case 'o':
+                    if (i > 0)
+                    {
+                        t = s.substring(0, i);
+                        s = s.substring(i);
+                    }
+                    else
+                    {
+                        t = "";
+                    }
+                    
+                    s = tokenMappings.getProperty(s, s);
+                    return t + s;
                 
-                s = props.getProperty(s, s);
-                return t + s;
-            
-            case 'i':
-                try {
-                    t = s.substring(i + 1);
-                    i = Integer.parseInt(t);
-
-                    InventoryObject item = cache.getObjects().getObject((short)i);
-                    if (item != null) {
-                        return item.getName();
-                    } else {
+                // Inventory items.
+                case 'i':
+                    try {
+                        t = s.substring(i + 1);
+                        i = Integer.parseInt(t);
+    
+                        InventoryObject item = resourceCache.getObjects().getObject((short)i);
+                        if (item != null) {
+                            return item.getName();
+                        } else {
+                            return s;
+                        }
+                    } catch (IOException e) {
+                        return s;
+                    } catch (ResourceException e) {
+                        return s;
+                    } catch (NumberFormatException e) {
                         return s;
                     }
-                } catch (IOException e) {
-                    return s;
-                } catch (ResourceException e) {
-                    return s;
-                } catch (NumberFormatException e) {
-                    return s;
-                }
                 
-            case 'w':
-                try  {
-                    t = s.substring(i + 1);
-                    i = Integer.parseInt(t);
+                // Words.
+                case 'w':
+                    try  {
+                        t = s.substring(i + 1);
+                        i = Integer.parseInt(t);
+                        
+                        Word word = resourceCache.getWords().getWordByNumber(i);
+                        if (word != null) {
+                            return word.text;
+                        } else {
+                            return s;
+                        }
+                    } 
+                    catch (ResourceException e) {
+                        return s;
+                    } 
+                    catch (IOException e)  {
+                        return s;
+                    } 
+                    catch (NumberFormatException e) {
+                        return s;
+                    }            
                     
-                    Word word = cache.getWords().getWordByNumber(i);
-                    if (word != null) {
-                        return word.text;
-                    } else {
+                // Messages.
+                case 'm':
+                    try
+                    {
+                        t = s.substring(i + 1);
+                        i = Integer.parseInt(t);
+                        
+                        return "\"" + logic.getMessageProcessed(i) + "\"";
+                    }
+                    catch (NumberFormatException nfex)
+                    {
                         return s;
                     }
-                } 
-                catch (ResourceException e) {
-                    return s;
-                } 
-                catch (IOException e)  {
-                    return s;
-                } 
-                catch (NumberFormatException e) {
-                    return s;
-                }            
-                
-            case 'm':
-                try
-                {
-                    t = s.substring(i + 1);
-                    i = Integer.parseInt(t);
-                    
-                    return "\"" + logic.getMessageProcessed(i) + "\"";
-                }
-                catch (NumberFormatException nfex)
-                {
-                    return s;
-                }
             }
         }
         
         return s;
     }
     
-    public Vector decompile(LogicInterpreter logicInterpreter)
+    /**
+     * 
+     * 
+     * @param logicInterpreter
+     * 
+     * @return
+     */
+    public Vector<LogicLine> decompile(LogicInterpreter logicInterpreter)
     {
-        Vector        result       = new Vector();
+        Vector<LogicLine> result = new Vector<LogicLine>();
         Instruction[] instructions = logicInterpreter.getInstructions();
     
         result.add(new LogicLine(0, "void logic" + logicInterpreter.getLogicNumber() + "()"));
@@ -245,13 +300,23 @@ public class LogicEvaluator extends Object
     }
     
     /**
+     * 
+     * 
      * if (...) ...
      * if (...) ... else ...
      * for (...; ...)
      * while (...) ...
      * do ... while(...)
+     * 
+     * @param logic            The Logic to decompile.
+     * @param instructions     The Instruction array for the Logic.
+     * @param instructionSizes The sizes of each Instruction in the instructions array.
+     * @param level            The nested level.
+     * @param start            The starting index within the instructions array to use.
+     * @param end              The ending index within the instructions array to use.
+     * @param result           The Vector in to which to put the decompiled LogicLine instances.
      */
-    protected int decompile(Logic logic, Instruction[] instructions, int[] sizes, int level, int start, int end, Vector result)
+    protected int decompile(Logic logic, Instruction[] instructions, int[] instructionSizes, int level, int start, int end, Vector result)
     {
         int          in, destination;
         Instruction  instruction;
@@ -272,7 +337,7 @@ public class LogicEvaluator extends Object
             
         if (lastInstruction instanceof InstructionMoving)
         {
-            lastInstructionDestination = ((InstructionMoving)lastInstruction).getDestination(end - 1, sizes);
+            lastInstructionDestination = ((InstructionMoving)lastInstruction).getDestination(end - 1, instructionSizes);
         }
         else
         {
@@ -281,7 +346,7 @@ public class LogicEvaluator extends Object
         
         if (firstInstruction instanceof InstructionMoving)
         {
-            firstInstructionDestination = ((InstructionMoving)firstInstruction).getDestination(start, sizes);
+            firstInstructionDestination = ((InstructionMoving)firstInstruction).getDestination(start, instructionSizes);
         }
         else
         {
@@ -305,7 +370,7 @@ public class LogicEvaluator extends Object
                 
                 result.add(new LogicLine(level, start, firstInstruction, "while " + line));
                 result.add(new LogicLine(level, "{"));
-                decompile(logic, instructions, sizes, level + 1, start + 1, end - 1, result);
+                decompile(logic, instructions, instructionSizes, level + 1, start + 1, end - 1, result);
                 result.add(new LogicLine(level, "}"));
                 return 0;
             }
@@ -315,7 +380,7 @@ public class LogicEvaluator extends Object
                 result.add(new LogicLine(level, "do"));
                 result.add(new LogicLine(level, "{"));
 
-                decompile(logic, instructions, sizes, level + 1, start, end - 1, result);
+                decompile(logic, instructions, instructionSizes, level + 1, start, end - 1, result);
 
                 if (firstInstruction instanceof InstructionIf)
                 {
@@ -342,11 +407,11 @@ public class LogicEvaluator extends Object
                 
                 if (lastInstruction instanceof InstructionGoto)
                 {
-                    decompile(logic, instructions, sizes, level + 1, start + 1, end - 1, result);
+                    decompile(logic, instructions, instructionSizes, level + 1, start + 1, end - 1, result);
                 }
                 else
                 {
-                    decompile(logic, instructions, sizes, level + 1, start + 1, end, result);
+                    decompile(logic, instructions, instructionSizes, level + 1, start + 1, end, result);
                 }
                 
                 result.add(new LogicLine(level, "}"));
@@ -361,7 +426,7 @@ public class LogicEvaluator extends Object
         
             if (instruction instanceof InstructionMoving)
             {
-                destination = ((InstructionMoving)instruction).getDestination(in, sizes);
+                destination = ((InstructionMoving)instruction).getDestination(in, instructionSizes);
                 
                 if (destination < in)
                 {
@@ -370,15 +435,15 @@ public class LogicEvaluator extends Object
                     if (destination != start)
                     {
                         // Decompile the start seperatly.
-                        decompile(logic, instructions, sizes, level, start, destination, result);
+                        decompile(logic, instructions, instructionSizes, level, start, destination, result);
                     }
                     
-                    decompile(logic, instructions, sizes, level, destination, in + 1, result);
+                    decompile(logic, instructions, instructionSizes, level, destination, in + 1, result);
 
                     if (in != end)
                     {
                         // Decompile the end seperatly.
-                        decompile(logic, instructions, sizes, level, in + 1, end, result);
+                        decompile(logic, instructions, instructionSizes, level, in + 1, end, result);
                     }
                     
                     return 0;
@@ -393,7 +458,7 @@ public class LogicEvaluator extends Object
         
             if (instruction instanceof InstructionMoving)
             {
-                destination = ((InstructionMoving)instruction).getDestination(in, sizes);
+                destination = ((InstructionMoving)instruction).getDestination(in, instructionSizes);
                 
                 if (destination >= in)
                 {
@@ -402,24 +467,24 @@ public class LogicEvaluator extends Object
                     if (destination != start)
                     {
                         // Decompile the start seperatly.
-                        decompile(logic, instructions, sizes, level, start, in, result);
+                        decompile(logic, instructions, instructionSizes, level, start, in, result);
                     }
                     
-                    decompile(logic, instructions, sizes, level, in, destination, result);
+                    decompile(logic, instructions, instructionSizes, level, in, destination, result);
 
                     lastInstruction = instructions[destination - 1];
                     
                     if (lastInstruction instanceof InstructionGoto)
                     {
                         // It's a "if ... else ..."
-                        lastInstructionDestination = ((InstructionGoto)lastInstruction).getDestination(destination - 1, sizes);
+                        lastInstructionDestination = ((InstructionGoto)lastInstruction).getDestination(destination - 1, instructionSizes);
                         
                         if (lastInstructionDestination > destination)
                         {
                             result.add(new LogicLine(level, destination - 1, lastInstruction, "else"));
                             result.add(new LogicLine(level, "{"));
                             
-                            decompile(logic, instructions, sizes, level + 1, destination, lastInstructionDestination, result);
+                            decompile(logic, instructions, instructionSizes, level + 1, destination, lastInstructionDestination, result);
                             destination = lastInstructionDestination;
 
                             result.add(new LogicLine(level, "}"));
@@ -429,7 +494,7 @@ public class LogicEvaluator extends Object
                     if (in != end)
                     {
                         // Decompile the end seperatly.
-                        decompile(logic, instructions, sizes, level, destination, end, result);
+                        decompile(logic, instructions, instructionSizes, level, destination, end, result);
                     }
                     
                     return 0;
