@@ -24,9 +24,6 @@ import java.io.*;
  */
 public class InstructionIf extends InstructionMoving implements Compilable
 {
-    /** Goto Address */
-    protected short gotoAddress;
-
     /** Contained Expression */
     protected Expression contained;
     
@@ -83,7 +80,7 @@ public class InstructionIf extends InstructionMoving implements Compilable
         }
         
         contained   = (j == 1)? expression: and;
-        gotoAddress = (short)bstream.lohiReadUnsignedShort();
+        relativeGotoAddress = (short)bstream.lohiReadUnsignedShort();
     }
 
     /**
@@ -99,17 +96,17 @@ public class InstructionIf extends InstructionMoving implements Compilable
         
         if (contained.evaluate(logic, logicContext))
         {
-            /* Condidition is true. No move. Continue has if nothing happened. */
+            /* Condition is true. No move. Continue as if nothing happened. */
             return size;
         }
         
         /* Move! */
-        return size + gotoAddress;
+        return size + relativeGotoAddress;
     }
     
     public void compile(LogicCompileContext compileContext)
     {
-        int addr = compileContext.pc + getSize() + gotoAddress;
+        int addr = compileContext.pc + getSize() + relativeGotoAddress;
     
         ((CompilableExpression)contained).compile(compileContext, false, "agi_" + addr);
     }
@@ -136,9 +133,9 @@ public class InstructionIf extends InstructionMoving implements Compilable
         String[] names = new String[4];
         
         names[0] = "if";
-        names[1] = Integer.toString(gotoAddress);
+        names[1] = Integer.toString(relativeGotoAddress);
         names[2] = contained.toString();
-        names[3] = Integer.toString(gotoAddress + getSize());
+        names[3] = Integer.toString(relativeGotoAddress + getSize());
         
         return names;
     }
@@ -158,8 +155,8 @@ public class InstructionIf extends InstructionMoving implements Compilable
             buff.append("?");
         }
         
-        buff.append(") (else goto +");
-        buff.append(gotoAddress + getSize());
+        buff.append(") (else goto ");
+        buff.append(String.format("$%04X", getAbsoluteGotoAddress()));
         buff.append(")");
         return buff.toString();
     }
@@ -173,15 +170,5 @@ public class InstructionIf extends InstructionMoving implements Compilable
     public Expression getExpression()
     {
         return contained;
-    }
-    
-    /**
-     * Retreive the Address which is referenced by this instruction.
-     *
-     * @return Returns the Address referenced by this instruction.
-     */
-    public int getAddress()
-    {
-        return gotoAddress;
     }
 }

@@ -245,19 +245,23 @@ public class LogicReader extends Object
     public void readInstructions(Vector instructions, InputStream stream) throws IOException, LogicException
     {
         Instruction instruct;
-        int byteCount = 0;
+        int instructionAddress = 0;
         
         try
         {
             while (true)
             {
-                System.out.print(String.format("Offset: %04X, Ins#: %02d -", byteCount, instructions.size() + 1));
+                System.out.print(String.format("Offset: %04X, Ins#: %02d -", instructionAddress, instructions.size() + 1));
                 instruct = readInstruction(stream);
                 
                 if (instruct == null)
                 {
                     break;
                 }
+                
+                // Keep track of each Instruction's address as we read them in.
+                instruct.setAddress(instructionAddress);
+                instructionAddress += instruct.getSize();
                 
                 if (!(instruct instanceof Compilable))
                 {
@@ -269,8 +273,6 @@ public class LogicReader extends Object
                 instructions.add(instruct);
                 
                 System.out.println("   " + instruct.toString());
-                
-                byteCount += instruct.getSize();
             }
         }
         catch (EOFException ex)

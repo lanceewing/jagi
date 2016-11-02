@@ -11,6 +11,8 @@ package com.sierra.agi.debug.logic;
 import java.io.*;
 import java.util.*;
 
+import com.sierra.agi.debug.logic.decompile.CallableCodeUnit;
+import com.sierra.agi.debug.logic.decompile.ControlFlowGraph;
 import com.sierra.agi.inv.InventoryObject;
 import com.sierra.agi.logic.Logic;
 import com.sierra.agi.logic.interpret.LogicInterpreter;
@@ -83,7 +85,7 @@ public class LogicEvaluator
         if (ip >= 0)
         {
             buffer.append(" (else goto ");
-            buffer.append(Integer.toHexString(ip + instructionIf.getAddress() + instructionIf.getSize()));
+            buffer.append(Integer.toHexString(ip + instructionIf.getRelativeGotoAddress() + instructionIf.getSize()));
             buffer.append(")");
         }
     }
@@ -109,7 +111,7 @@ public class LogicEvaluator
         else if (instruction instanceof InstructionGoto)
         {
             buffer.append(names[0]);
-            buffer.append(Integer.toHexString(ip + ((InstructionGoto)instruction).getAddress() + instruction.getSize()));
+            buffer.append(Integer.toHexString(ip + ((InstructionGoto)instruction).getRelativeGotoAddress() + instruction.getSize()));
         }
         else {
             StringTokenizer tokenizer = new StringTokenizer(instruction.toString(), " ,()", true);
@@ -299,6 +301,24 @@ public class LogicEvaluator
         return result;
     }
     
+    protected int decompile(Logic logic, Instruction[] instructions, int[] instructionSizes, int level, int start, int end, Vector<LogicLine> result) {
+        
+        try {
+            CallableCodeUnit callableCodeUnit = new CallableCodeUnit(instructions);
+            
+            // If the ControlFlowGraph hasn't been built yet, force it now.
+            ControlFlowGraph controlFlowGraph = callableCodeUnit.getControlFlowGraph();
+            
+            System.out.println(callableCodeUnit.toString());
+            
+        
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return 0;
+    }
+    
     /**
      * 
      * 
@@ -316,7 +336,7 @@ public class LogicEvaluator
      * @param end              The ending index within the instructions array to use.
      * @param result           The Vector in to which to put the decompiled LogicLine instances.
      */
-    protected int decompile(Logic logic, Instruction[] instructions, int[] instructionSizes, int level, int start, int end, Vector result)
+    protected int decompile2(Logic logic, Instruction[] instructions, int[] instructionSizes, int level, int start, int end, Vector<LogicLine> result)
     {
         int          in, destination;
         Instruction  instruction;

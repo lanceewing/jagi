@@ -12,6 +12,11 @@ package com.sierra.agi.logic.interpret.instruction;
  */
 public abstract class InstructionMoving extends Instruction
 {
+    /** 
+     * Relative Goto Position, i.e. the raw value exactly as read from the LOGIC. 
+     */
+    protected short relativeGotoAddress;
+    
     /**
      * Creates new Moving Instruction. Does absolutly nothing. Serve only has a
      * formal declaration.
@@ -21,12 +26,25 @@ public abstract class InstructionMoving extends Instruction
     }
     
     /**
-     * Retreive the Address which is referenced by this instruction.
+     * Retreive the relative goto address which is referenced by this instruction.
      *
-     * @return Returns the Address referenced by this instruction.
+     * @return Returns the relative goto address referenced by this instruction.
      */
-    public abstract int getAddress();
-
+    public int getRelativeGotoAddress()
+    {
+        return relativeGotoAddress;
+    }
+    
+    /**
+     * Returns the absolute goto address that is reference by this instruction.
+     * 
+     * @return The absolute goto address that is referenced by this instruction.
+     */
+    public int getAbsoluteGotoAddress()
+    {
+        return (address + getSize() + relativeGotoAddress);
+    }
+    
     /**
      * Determine Destination Instruction Number
      * 
@@ -35,7 +53,7 @@ public abstract class InstructionMoving extends Instruction
      */
     public int getDestination(int instructionNum, int[] instructionSizes)
     {
-        int gotoFactor = getAddress() + instructionSizes[instructionNum];
+        int gotoFactor = getRelativeGotoAddress() + instructionSizes[instructionNum];
 
         if (gotoFactor > 0)
         {

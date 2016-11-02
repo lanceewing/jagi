@@ -81,7 +81,7 @@ public class ControlFlowGraph {
 
             // If the Instruction is a branch, then we store the target BasicBlock as a successor.
             if (instruction instanceof InstructionMoving) {
-                currentBlock.addSuccessor(getOrCreateBlock(((InstructionMoving)instruction).getAddress()));
+                currentBlock.addSuccessor(getOrCreateBlock(((InstructionMoving)instruction).getAbsoluteGotoAddress()));
             }
         }
     }

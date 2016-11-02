@@ -44,11 +44,8 @@ public class CallableCodeUnit {
         this.instructions = new TreeMap<Integer, Instruction>();
         this.leaderAddresses = new TreeSet<Integer>();
         
-        int address = 0;
-        
         for (Instruction instruction : instructions) {
-            addInstruction(address, instruction);
-            address += instruction.getSize();
+            addInstruction(instruction);
         }
         
         
@@ -60,10 +57,9 @@ public class CallableCodeUnit {
      * addresses for the first Instruction and the implicit targets work. If they were 
      * added in a random sequence, this class wouldn't work.
      * 
-     * @param address The address (or offset) of the Instruction within the Logic.
      * @param instruction The Instruction add. It's address is contained within it.
      */
-    private void addInstruction(int address, Instruction instruction) {
+    private void addInstruction(Instruction instruction) {
         // Get the last Instruction if there was one. We use this when determining whether
         // the Instruction is a leader Instruction.
         Instruction lastInstruction = null;
@@ -72,7 +68,7 @@ public class CallableCodeUnit {
         }
         
         // Add the Instruction to this CallableCodeUnit's Map of Instructions.
-        this.instructions.put(address, instruction);
+        this.instructions.put(instruction.getAddress(), instruction);
         
         // We identify the leader addresses while we're at it. There are 3 types of leader Instruction:
         //
@@ -83,13 +79,13 @@ public class CallableCodeUnit {
         if ((lastInstruction == null) || (lastInstruction instanceof InstructionMoving)) {
             // If this is the first Instruction, or an Instruction immediately following a branch,
             // then add the address to the leader addresses. It is starting a new block.
-            this.leaderAddresses.add(address);
+            this.leaderAddresses.add(instruction.getAddress());
             
         }
         if (instruction instanceof InstructionMoving) {
             // If this instruction is a branch (either conditional bnt/bt or non-conditional jmp)
             // then add it's target to the Set of leader addresses for this CallableCodeUnit.
-            this.leaderAddresses.add(((InstructionMoving)instruction).getAddress());
+            this.leaderAddresses.add(((InstructionMoving)instruction).getAbsoluteGotoAddress());
         }
     }
     
@@ -130,7 +126,7 @@ public class CallableCodeUnit {
     /**
      * Builds (or rebuilds) the ControlFlowGraph for this CallableCodeUnit.
      */
-    public void buildControlFlowGraph() {
+    private void buildControlFlowGraph() {
         this.controlFlowGraph = new ControlFlowGraph(this);
     }
     
@@ -150,6 +146,9 @@ public class CallableCodeUnit {
             
             
             
+            
+            
+            
         }
     }
     
@@ -158,7 +157,7 @@ public class CallableCodeUnit {
         
         if (this.controlFlowGraph != null) {
             for (BasicBlock block : this.controlFlowGraph.getBlocksInAddressOrder()) {
-                //str.append(String.format("|%04X", block.getStartAddress()));
+                str.append(String.format("|%04X", block.getStartAddress()));
                 str.append("\n");
                 
                 Collection<Instruction> instructions = block.getInstructions();

@@ -22,7 +22,12 @@ import java.io.*;
 public abstract class Instruction extends Object
 {
     /**
-     * Creates a new Instruction Does absolutly nohting in this class, it is
+     * The address of the Instruction.
+     */
+    protected int address;
+    
+    /**
+     * Creates a new Instruction Does absolutely nothing in this class, it is
      * included as a formal declaration.
      */
     protected Instruction()
@@ -30,7 +35,7 @@ public abstract class Instruction extends Object
     }
     
     /**
-     * Creates a new Instruction. Does absolutly nothing in this class, it is
+     * Creates a new Instruction. Does absolutely nothing in this class, it is
      * included as a formal declaration.
      *
      * @param context   Game context where this instance of the instruction will be used.
@@ -97,5 +102,25 @@ public abstract class Instruction extends Object
     public int getSize()
     {
         return 1;
+    }
+
+    /**
+     * Gets the address of the Instruction within the Logic.
+     * 
+     * @return The address of the Instruction within the Logic.
+     */
+    public int getAddress() 
+    {
+        return address;
+    }
+
+    /**
+     * Sets the address of the Instruction within the Logic.
+     * 
+     * @param address The address of the Instruction within the Logic.
+     */
+    public void setAddress(int address) 
+    {
+        this.address = address;
     }
 }

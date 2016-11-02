@@ -20,9 +20,6 @@ import java.io.*;
  */
 public class InstructionGoto extends InstructionMoving implements Compilable
 {
-    /** Goto Position */
-    protected short gotoPosition;
-    
     /**
      * Creates a new Goto Instruction.
      *
@@ -36,7 +33,7 @@ public class InstructionGoto extends InstructionMoving implements Compilable
     {
         ByteCasterStream bstream = new ByteCasterStream(stream);
 
-        gotoPosition = (short)(bstream.lohiReadUnsignedShort());
+        relativeGotoAddress = (short)(bstream.lohiReadUnsignedShort());
     }
 
     /**
@@ -48,7 +45,7 @@ public class InstructionGoto extends InstructionMoving implements Compilable
      */
     public int execute(Logic logic, LogicContext logicContext)
     {
-        return gotoPosition + 3;
+        return relativeGotoAddress + 3;
     }
     
     /**
@@ -64,7 +61,7 @@ public class InstructionGoto extends InstructionMoving implements Compilable
     
     public void compile(LogicCompileContext compileContext)
     {
-        int addr = compileContext.pc + 3 + gotoPosition;
+        int addr = compileContext.pc + 3 + relativeGotoAddress;
     
         compileContext.scope.addGoto("agi_" + addr);
     }
@@ -81,19 +78,9 @@ public class InstructionGoto extends InstructionMoving implements Compilable
         String[] names = new String[2];
         
         names[0] = "goto";
-        names[1] = Integer.toString(gotoPosition);
+        names[1] = String.format("$%04X", getAbsoluteGotoAddress());
         
         return names;
     }
 //#endif DEBUG
-    
-    /**
-     * Retreive the Address which is referenced by this instruction.
-     *
-     * @return Returns the Address referenced by this instruction.
-     */
-    public int getAddress()
-    {
-        return gotoPosition;
-    }
 }
