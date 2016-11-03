@@ -152,6 +152,32 @@ public class CallableCodeUnit {
         }
     }
     
+    public String toDotString() {
+        StringBuilder str = new StringBuilder();
+        
+        if (this.controlFlowGraph != null) {
+            str.append("digraph code {\n");
+            
+            for (BasicBlock block : this.controlFlowGraph.getBlocksInAddressOrder()) {
+                for (BasicBlock successor : block.getSuccessors()) {
+                    str.append(String.format("  n_%04x -> n_%04x [color=red];\n", block.getStartAddress(), successor.getStartAddress()));
+                    str.append(String.format("  n_%04x [label =\"%04x:\\n", block.getStartAddress(), block.getStartAddress()));
+                    
+                    for (Instruction instruction : block.getInstructions()) {
+                        str.append(instruction.toString());
+                        str.append("\\n");
+                    }
+                    
+                    str.append("\\n\"] [color=red];\n");
+                }
+            }
+            
+            str.append("}\n");
+        }
+        
+        return str.toString();
+    }
+    
     public String toString() {
         StringBuilder str = new StringBuilder();
         

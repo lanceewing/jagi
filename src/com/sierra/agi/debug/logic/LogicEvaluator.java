@@ -310,6 +310,7 @@ public class LogicEvaluator
             ControlFlowGraph controlFlowGraph = callableCodeUnit.getControlFlowGraph();
             
             System.out.println(callableCodeUnit.toString());
+            System.out.println(callableCodeUnit.toDotString());
             
         
         } catch (Exception e) {
