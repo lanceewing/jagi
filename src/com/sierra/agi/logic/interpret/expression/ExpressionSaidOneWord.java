@@ -14,4 +14,14 @@ public class ExpressionSaidOneWord extends ExpressionSaid {
     protected int getWordCount(InputStream stream) throws IOException {
         return 1;
     }
+    
+    /**
+     * Determine Expression Size.
+     *
+     * @return Returns the expression size.
+     */
+    public int getSize()
+    {
+        return 1 + (wordNumbers.length * 2);
+    }
 }
