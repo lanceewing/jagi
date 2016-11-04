@@ -91,7 +91,7 @@ public class LogicReader extends Object
         
         try
         {
-            readInstructions(instructions, new ByteArrayInputStream(b, 2, ByteCaster.lohiUnsignedShort(b, 0)));
+            readInstructions(instructions, new PublicByteArrayInputStream(b, 2, ByteCaster.lohiUnsignedShort(b, 0)));
         }
         catch (Exception e)
         {
@@ -246,12 +246,20 @@ public class LogicReader extends Object
     {
         Instruction instruct;
         int instructionAddress = 0;
+        int totalSize = 0;
         
         try
         {
+            PublicByteArrayInputStream is = (PublicByteArrayInputStream)stream;
+            
             while (true)
             {
-                System.out.print(String.format("Offset: %04X, Ins#: %02d -", instructionAddress, instructions.size() + 1));
+                // The "address" of the instruction is the current position within the LOGIC byte array,
+                // minus the two byte pointer at the start.
+                instructionAddress = is.getPosition() - 2;
+                
+                System.out.print(String.format("Offset: [%04X] %04X, Ins#: %02d -", totalSize, instructionAddress, instructions.size() + 1));
+                
                 instruct = readInstruction(stream);
                 
                 if (instruct == null)
@@ -261,7 +269,8 @@ public class LogicReader extends Object
                 
                 // Keep track of each Instruction's address as we read them in.
                 instruct.setAddress(instructionAddress);
-                instructionAddress += instruct.getSize();
+                
+                totalSize += instruct.getSize();
                 
                 if (!(instruct instanceof Compilable))
                 {
