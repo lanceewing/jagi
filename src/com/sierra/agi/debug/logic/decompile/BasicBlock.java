@@ -82,6 +82,24 @@ public class BasicBlock {
     }
 
     /**
+     * Gets the first Instruction in this BasicBlock.
+     * 
+     * @return The first Instruction in this BasicBlock.
+     */
+    public Instruction getFirstInstruction() {
+        return this.instructions.get(0);
+    }
+    
+    /**
+     * Gets the last Instruction in this BasicBlock.
+     * 
+     * @return The last Instruction in this BasicBlock.
+     */
+    public Instruction getLastInstruction() {
+        return this.instructions.get(this.instructions.size() - 1);
+    }
+    
+    /**
      * Gets the starting address of this BasicBlock.
      *  
      * @return The starting address of this BasicBlock.
