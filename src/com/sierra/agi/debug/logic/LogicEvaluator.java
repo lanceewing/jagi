@@ -11,8 +11,6 @@ package com.sierra.agi.debug.logic;
 import java.io.*;
 import java.util.*;
 
-import com.sierra.agi.debug.logic.decompile.CallableCodeUnit;
-import com.sierra.agi.debug.logic.decompile.ControlFlowGraph;
 import com.sierra.agi.inv.InventoryObject;
 import com.sierra.agi.logic.Logic;
 import com.sierra.agi.logic.interpret.LogicInterpreter;
@@ -295,29 +293,111 @@ public class LogicEvaluator
         result.add(new LogicLine(0, "void logic" + logicInterpreter.getLogicNumber() + "()"));
         result.add(new LogicLine(0, "{"));
     
-        decompile(logicInterpreter, instructions, logicInterpreter.getInstructionSizes(), 1, 0, instructions.length, result);
+        //decompile(logicInterpreter, instructions, logicInterpreter.getInstructionSizes(), 1, 0, instructions.length, result);
+        decompile(logicInterpreter, instructions, result);
 
         result.add(new LogicLine(0, "}"));
         return result;
     }
     
-    protected int decompile(Logic logic, Instruction[] instructions, int[] instructionSizes, int level, int start, int end, Vector<LogicLine> result) {
+    protected void decompile(Logic logic, Instruction[] instructions, Vector<LogicLine> result) {
+        // Temporary Map to hold the LogicLines prior to merging with the label lines.
+        Vector<LogicLine> lines = new Vector<LogicLine>(); 
+
+        // Stores the address to label name mappings for any "goto" destinations.
+        HashMap<Integer, String> labels = new HashMap<Integer, String>();
         
-        try {
-            CallableCodeUnit callableCodeUnit = new CallableCodeUnit(instructions);
-            
-            // If the ControlFlowGraph hasn't been built yet, force it now.
-            ControlFlowGraph controlFlowGraph = callableCodeUnit.getControlFlowGraph();
-            
-            System.out.println(callableCodeUnit.toString());
-            System.out.println(callableCodeUnit.toDotString());
-            
+        // Keeps track of the current active moving/branch Instruction, if there is one. 
+        Stack<InstructionMoving> branchStack = new Stack<InstructionMoving>();
         
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (int instructionNum=0; instructionNum < instructions.length; instructionNum++) {
+            Instruction instruction = instructions[instructionNum];
+            
+            // Close any open branch blocks that have reached their end.
+            while (!branchStack.isEmpty() && (branchStack.peek().getAbsoluteGotoAddress() <= instruction.getAddress())) {
+                branchStack.pop();
+                lines.add(new LogicLine(branchStack.size() + 1, "}"));
+            }
+            
+            // Our new indent size is the number of branch blocks left in the stack.
+            int indent = branchStack.size() + 1;
+            
+            if (instruction instanceof InstructionIf) {
+                lines.add(new LogicLine(indent, instructionNum, instruction, "if" + evaluateExpression(logic, -1, (InstructionIf)instruction)));
+                lines.add(new LogicLine(indent, "{"));
+                branchStack.push((InstructionMoving)instruction);
+            }
+            else if (instruction instanceof InstructionGoto) {
+                int destAddress = ((InstructionGoto)instruction).getAbsoluteGotoAddress();
+                
+                // Build a Label String for this destination address. We may not need it though.
+                String label = (labels.get(destAddress) != null? labels.get(destAddress) : "Label" + (labels.size() + 1));
+                
+                if (destAddress < instruction.getAddress()) {
+                    // If the destination address is less than the current address, then it is 
+                    // always a "goto" keyword. AGI doesn't support "while", "do..while", "for",
+                    // or any other loop keywords. Basic looping is handled solely with "goto".
+                    lines.add(new LogicLine(indent, instructionNum, instruction, "goto " + label +  ";"));
+                    labels.put(destAddress, label);
+                    
+                } else {
+                    if (branchStack.isEmpty()) {
+                        // If we're at the top level, then it is always a "goto" keyword.
+                        lines.add(new LogicLine(indent, instructionNum, instruction, "goto " + label +  ";"));
+                        labels.put(destAddress, label);
+                        
+                    } else {
+                        InstructionMoving activeBranchBlock = branchStack.peek();
+                        
+                        if (activeBranchBlock instanceof InstructionIf) {
+                            if (activeBranchBlock.getAbsoluteGotoAddress() == instruction.getNextInstructionAddress()) {
+                                // The InstructionGoto is the last instruction within the "if" block.
+                                if (activeBranchBlock.getNextInstructionAddress() == instruction.getAddress()) {
+                                    // If the InstructionGoto is also the first Instruction in the "if" block, then
+                                    // it almost certainly a "goto" keyword (since a blank "if" block is unlikely).
+                                    lines.add(new LogicLine(indent, instructionNum, instruction, "goto " + label +  ";"));
+                                    labels.put(destAddress, label);
+                                    
+                                } else {
+                                    // Otherwise it is possible, and in most times probable, that this is an "else". It may 
+                                    // not always be so though.
+                                    
+                                    // TODO: Handle case where goto destination is not at the same level as if, therefore not an else.
+                                    
+                                    branchStack.pop();
+                                    lines.add(new LogicLine(indent - 1, "}"));
+                                    lines.add(new LogicLine(indent - 1, instructionNum, instruction, "else"));
+                                    lines.add(new LogicLine(indent - 1, "{"));
+                                    branchStack.push((InstructionMoving)instruction);
+                                }
+                            } else {
+                                // If the InstructionGoto is within an "if" block but is not the last instruction
+                                // in that "if" block, then it must be a "goto" keyword.
+                                lines.add(new LogicLine(indent, instructionNum, instruction, "goto " + label +  ";"));
+                                labels.put(destAddress, label);
+                            }
+                        } else {
+                            // If the currently active branch block is an "else", then an InstructionGoto nested within
+                            // it must be a "goto" keyword.
+                            lines.add(new LogicLine(indent, instructionNum, instruction, "goto " + label +  ";"));
+                            labels.put(destAddress, label);
+                        }
+                    }
+                }
+            }
+            else {
+                // Normal instruction.
+                lines.add(new LogicLine(indent, instructionNum, instruction, evaluateInstruction(logic, -1, instruction) + ";"));
+            }
         }
         
-        return 0;
+        // Add the identified Labels in the positions where they should be.
+        for (LogicLine logicLine : lines) {
+            if ((logicLine.instruction != null) && (labels.containsKey(logicLine.instruction.getAddress()))) {
+                result.add(new LogicLine(logicLine.level, labels.get(logicLine.instruction.getAddress()) + ":"));
+            }
+            result.add(logicLine);
+        }
     }
     
     /**
@@ -337,7 +417,7 @@ public class LogicEvaluator
      * @param end              The ending index within the instructions array to use.
      * @param result           The Vector in to which to put the decompiled LogicLine instances.
      */
-    protected int decompile2(Logic logic, Instruction[] instructions, int[] instructionSizes, int level, int start, int end, Vector<LogicLine> result)
+    protected int decompile(Logic logic, Instruction[] instructions, int[] instructionSizes, int level, int start, int end, Vector<LogicLine> result)
     {
         int          in, destination;
         Instruction  instruction;

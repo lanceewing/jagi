@@ -123,4 +123,14 @@ public abstract class Instruction extends Object
     {
         this.address = address;
     }
+    
+    /**
+     * Gets the address of the Instruction that immediately follows this Instruction.
+     * 
+     * @return The address of the Instruction that follows this Instruction.
+     */
+    public int getNextInstructionAddress()
+    {
+        return this.address + this.getSize();
+    }
 }

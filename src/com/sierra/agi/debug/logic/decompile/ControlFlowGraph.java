@@ -60,7 +60,6 @@ public class ControlFlowGraph {
             // If the Instruction's address is a leader address, then we create
             // a new BasicBlock.
             if (ccu.getLeaderAddresses().contains(instructionAddress)) {
-                System.out.println(String.format("Found leader address: %04X", instructionAddress));
                 previousBlock = currentBlock;
                 currentBlock = getOrCreateBlock(instructionAddress);
 
@@ -141,7 +140,6 @@ public class ControlFlowGraph {
     private BasicBlock getOrCreateBlock(int address) {
         BasicBlock block = getBlock(address);
         if (block == null) {
-            System.out.println(String.format("Creating new block: %04X", address));
             block = new BasicBlock(address);
             this.blocks.put(address, block);
         }

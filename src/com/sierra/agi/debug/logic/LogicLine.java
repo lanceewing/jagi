@@ -37,7 +37,7 @@ public class LogicLine
         generateText();
     }
 
-    public LogicLine(int level, int instructonNumber, Instruction[] instructions, String line)
+    public LogicLine(int level, int instructionNumber, Instruction[] instructions, String line)
     {
         this.level             = level;
         this.instructionNumber = instructionNumber;
