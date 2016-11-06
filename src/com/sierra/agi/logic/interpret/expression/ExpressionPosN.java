@@ -74,7 +74,7 @@ public final class ExpressionPosN extends ExpressionPent implements CompilableEx
      */
     public String[] getNames()
     {
-        return new String[] {"pos", Integer.toString(p1), Integer.toString(p2), Integer.toString(p3), Integer.toString(p4), Integer.toString(p5)};
+        return new String[] {"pos", "o" + p1, Integer.toString(p2), Integer.toString(p3), Integer.toString(p4), Integer.toString(p5)};
     }
 //#endif DEBUG
 }
