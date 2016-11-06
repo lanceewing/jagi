@@ -1,6 +1,5 @@
 package com.sierra.agi.debug.logic.analysis;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -47,8 +46,6 @@ public class CallableCodeUnit {
         for (Instruction instruction : instructions) {
             addInstruction(instruction);
         }
-        
-        
     }
     
     /**
@@ -131,27 +128,11 @@ public class CallableCodeUnit {
     }
     
     /**
-     * Performs control flow analysis on this CallableCodeUnit's ControlFlowGraph.
+     * Generates a String containing DOT language syntax for drawing the control flow
+     * graph and the dominator tree for this CallableCodeUnit.
+     * 
+     * @return The generated DOT syntax to draw the control flow graph and dominator tree.
      */
-    public void performControlFlowAnalysis() {
-        // If the ControlFlowGraph hasn't been built yet, force it now.
-        ControlFlowGraph controlFlowGraph = getControlFlowGraph();
-        
-        // Then get the DominatorTree of the graph, which we'll use to identify things like loops.
-        DominatorTree dominatorTree = controlFlowGraph.getDominatorTree();
-        
-        // Iterate over all BasicBlocks in the control flow graph...
-        for (BasicBlock basicBlock : controlFlowGraph.getBlocksInAddressOrder()) {
-            
-            
-            
-            
-            
-            
-            
-        }
-    }
-    
     public String toDotString() {
         StringBuilder str = new StringBuilder();
         
@@ -196,33 +177,6 @@ public class CallableCodeUnit {
             
             str.append("}\n");
             
-        }
-        
-        return str.toString();
-    }
-    
-    public String toString() {
-        StringBuilder str = new StringBuilder();
-        
-        if (this.controlFlowGraph != null) {
-            for (BasicBlock block : this.controlFlowGraph.getBlocksInAddressOrder()) {
-                str.append(String.format("|%04X", block.getStartAddress()));
-                str.append("\n");
-                
-                Collection<Instruction> instructions = block.getInstructions();
-                
-                for (Instruction instruction : instructions) {
-                    str.append("        ");
-                    str.append(instruction.toString());
-                    str.append("\n");
-                }
-            }
-        } else {
-            for (Instruction instruction : this.instructions.values()) {
-                str.append("        ");
-                str.append(instruction.toString());
-                str.append("\n");
-            }
         }
         
         return str.toString();
