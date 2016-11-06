@@ -1,4 +1,4 @@
-package com.sierra.agi.debug.logic.decompile;
+package com.sierra.agi.debug.logic.analysis;
 
 import java.util.Collection;
 import java.util.Map;
