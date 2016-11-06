@@ -279,11 +279,12 @@ public class LogicEvaluator
     }
     
     /**
+     * Decompiles the given Logic in to a text representation held within a Vector
+     * of LogicLine instances, where each line is a line of the logic source code.
      * 
+     * @param logicInterpreter The Logic to decompile, containing the raw bytecode Instructions.
      * 
-     * @param logicInterpreter
-     * 
-     * @return
+     * @return The decompiled Logic as a Vector of LogicLines.
      */
     public Vector<LogicLine> decompile(LogicInterpreter logicInterpreter)
     {
@@ -300,16 +301,27 @@ public class LogicEvaluator
         return result;
     }
     
+    /**
+     * Decompiles the given Instruction array in to a Vector of LogicLines. The LogicLine
+     * instances represent lines in the generated source code. They are structured in such
+     * a way to support the debugging features of JAGI, such as stepping through the code.
+     * 
+     * @param logic The Logic that is being decompiled. We need it mainly for the messages.
+     * @param instructions The array of Instructions from the Logic to decompile.
+     * @param result The Vector to add the decompiled LogicLines to. 
+     */
     protected void decompile(Logic logic, Instruction[] instructions, Vector<LogicLine> result) {
-        // Temporary Map to hold the LogicLines prior to merging with the label lines.
+        // Temporary Vector to hold the LogicLines prior to merging with the label lines.
         Vector<LogicLine> lines = new Vector<LogicLine>(); 
 
-        // Stores the address to label name mappings for any "goto" destinations.
+        // Stores the address to label name mappings for any "goto" destinations identified.
         HashMap<Integer, String> labels = new HashMap<Integer, String>();
         
         // Keeps track of the current active moving/branch Instruction, if there is one. 
         Stack<InstructionMoving> branchStack = new Stack<InstructionMoving>();
         
+        // For the main Instruction decompile iteration, we do it by index, so that we have the 
+        // instruction number required by the LogicLine class. This is used by the debugger tools.
         for (int instructionNum=0; instructionNum < instructions.length; instructionNum++) {
             Instruction instruction = instructions[instructionNum];
             
@@ -323,8 +335,11 @@ public class LogicEvaluator
             int indent = branchStack.size() + 1;
             
             if (instruction instanceof InstructionIf) {
+                // If it's an "if", add it, along with the contained condition, as a LogicLine.
                 lines.add(new LogicLine(indent, instructionNum, instruction, "if" + evaluateExpression(logic, -1, (InstructionIf)instruction)));
                 lines.add(new LogicLine(indent, "{"));
+                
+                // And push the InstructionIf on to the branch stack since it is now active.
                 branchStack.push((InstructionMoving)instruction);
             }
             else if (instruction instanceof InstructionGoto) {
@@ -347,6 +362,7 @@ public class LogicEvaluator
                         labels.put(destAddress, label);
                         
                     } else {
+                        // If we're not at the top level, then what is the currently active branch instruction?
                         InstructionMoving activeBranchBlock = branchStack.peek();
                         
                         if (activeBranchBlock instanceof InstructionIf) {
@@ -354,21 +370,44 @@ public class LogicEvaluator
                                 // The InstructionGoto is the last instruction within the "if" block.
                                 if (activeBranchBlock.getNextInstructionAddress() == instruction.getAddress()) {
                                     // If the InstructionGoto is also the first Instruction in the "if" block, then
-                                    // it almost certainly a "goto" keyword (since a blank "if" block is unlikely).
+                                    // it is almost certainly a "goto" keyword (since a blank "if" block is unlikely).
                                     lines.add(new LogicLine(indent, instructionNum, instruction, "goto " + label +  ";"));
                                     labels.put(destAddress, label);
                                     
                                 } else {
                                     // Otherwise it is possible, and in most times probable, that this is an "else". It may 
-                                    // not always be so though.
+                                    // not always be so though. We need to check that none of the other Instructions on the
+                                    // branch stack will end before we get to the destination address.
+                                    boolean elseTooBig = false;
+                                    for (InstructionMoving branchInstruction : branchStack) {
+                                        if (branchInstruction != activeBranchBlock) { 
+                                            if (branchInstruction.getAbsoluteGotoAddress() < destAddress) {
+                                                elseTooBig = true;
+                                                break;
+                                            }
+                                        }
+                                    }
                                     
-                                    // TODO: Handle case where goto destination is not at the same level as if, therefore not an else.
-                                    
-                                    branchStack.pop();
-                                    lines.add(new LogicLine(indent - 1, "}"));
-                                    lines.add(new LogicLine(indent - 1, instructionNum, instruction, "else"));
-                                    lines.add(new LogicLine(indent - 1, "{"));
-                                    branchStack.push((InstructionMoving)instruction);
+                                    if (elseTooBig) {
+                                        // The destination jumps beyond the extent of a branch instruction on the branch
+                                        // stack. It can't be an "else" then.
+                                        lines.add(new LogicLine(indent, instructionNum, instruction, "goto " + label +  ";"));
+                                        labels.put(destAddress, label);
+                                                                                
+                                    } else {
+                                        // If we didn't find any, then there is no harm assuming it is an "else". It is 
+                                        // still possible that the original source had a goto, but the "else" will be equivalent.
+                                        
+                                        // Close the "if" before adding the "else".
+                                        branchStack.pop();
+                                        
+                                        lines.add(new LogicLine(indent - 1, "}"));
+                                        lines.add(new LogicLine(indent - 1, instructionNum, instruction, "else"));
+                                        lines.add(new LogicLine(indent - 1, "{"));
+                                        
+                                        // Push the InstructionGoto (aka "else") on to the branch stack since it is now active.
+                                        branchStack.push((InstructionMoving)instruction);
+                                    }
                                 }
                             } else {
                                 // If the InstructionGoto is within an "if" block but is not the last instruction
@@ -391,7 +430,8 @@ public class LogicEvaluator
             }
         }
         
-        // Add the identified Labels in the positions where they should be.
+        // Add the created LogicLines to the output Vector, including the identified Labels in the 
+        // positions where they should be.
         for (LogicLine logicLine : lines) {
             if ((logicLine.instruction != null) && (labels.containsKey(logicLine.instruction.getAddress()))) {
                 result.add(new LogicLine(logicLine.level, labels.get(logicLine.instruction.getAddress()) + ":"));
@@ -401,7 +441,11 @@ public class LogicEvaluator
     }
     
     /**
+     * (NOT currently used).
      * 
+     * This was the original decompile method in JAGI, which attempted to recognise different
+     * types of loops, such as while, and do..while. We've now learnt though that the original
+     * AGI syntax did not support such keywords. Instead they used a goto for loops.
      * 
      * if (...) ...
      * if (...) ... else ...
