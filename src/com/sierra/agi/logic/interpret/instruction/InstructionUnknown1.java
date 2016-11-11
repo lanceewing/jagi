@@ -30,6 +30,6 @@ public class InstructionUnknown1 extends InstructionUni {
 
     @Override
     public String[] getNames() {
-        return new String[] {"unknown", Integer.toString(p1)};
+        return new String[] {"unknown_" + Integer.toHexString(bytecode), Integer.toString(p1)};
     }
 }
