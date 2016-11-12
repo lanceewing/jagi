@@ -71,7 +71,7 @@ public class InstructionMultiplyV extends InstructionBi
     {
         String[] names = new String[3];
         
-        names[0] = "mul";
+        names[0] = "mul.v";
         names[1] = "v" + p1;
         names[2] = "v" + p2;
 

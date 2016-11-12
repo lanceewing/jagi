@@ -68,7 +68,7 @@ public class InstructionPutV extends InstructionBi
     {
         String[] names = new String[3];
         
-        names[0] = "put";
+        names[0] = "put.v";
         names[1] = "i" + p1;
         names[2] = "v" + p2;
         

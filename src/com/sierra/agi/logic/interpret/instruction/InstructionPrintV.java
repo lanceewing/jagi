@@ -90,7 +90,7 @@ public class InstructionPrintV extends InstructionUni
     {
         String[] names = new String[2];
         
-        names[0] = "print";
+        names[0] = "print.v";
         names[1] = "mv" + p1;
         
         return names;

@@ -60,7 +60,7 @@ public class InstructionPositionV extends InstructionTri
     {
         String[] names = new String[4];
         
-        names[0] = "position";
+        names[0] = "position.v";
         names[1] = "o" + p1;
         names[2] = "v" + p2;
         names[3] = "v" + p3;

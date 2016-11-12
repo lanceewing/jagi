@@ -117,7 +117,7 @@ public class InstructionPrintAtV extends Instruction
     {
         String[] names = new String[5];
         
-        names[0] = "print.at";
+        names[0] = "print.at.v";
         names[1] = "mv" + p1;
         names[2] = "mv" + p2;
         names[3] = "mv" + p3;

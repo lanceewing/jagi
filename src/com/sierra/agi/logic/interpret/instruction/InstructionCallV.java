@@ -90,7 +90,7 @@ public class InstructionCallV extends InstructionUni implements Compilable
     {
         String[] names = new String[2];
         
-        names[0] = "call";
+        names[0] = "call.v";
         names[1] = "v" + p1;
 
         return names;

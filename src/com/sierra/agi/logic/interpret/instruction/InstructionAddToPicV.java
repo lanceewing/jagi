@@ -80,7 +80,7 @@ public class InstructionAddToPicV extends InstructionSept
     {
         String[] names = new String[8];
         
-        names[0] = "add.to.pic";
+        names[0] = "add.to.pic.v";
         names[1] = "v" + p1;
         names[2] = "v" + p2;
         names[3] = "v" + p3;

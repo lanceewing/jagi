@@ -103,7 +103,7 @@ public class InstructionNewRoomV extends InstructionUni implements Compilable
     {
         String[] names = new String[2];
         
-        names[0] = "new.room";
+        names[0] = "new.room.v";
         names[1] = "v" + p1;
 
         return names;

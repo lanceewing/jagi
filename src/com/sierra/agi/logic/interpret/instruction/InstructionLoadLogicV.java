@@ -81,7 +81,7 @@ public class InstructionLoadLogicV extends InstructionUni implements Compilable
     {
         String[] names = new String[2];
 
-        names[0] = "load.logic";
+        names[0] = "load.logics.v";
         names[1] = "v" + p1;
         
         return names;

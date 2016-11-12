@@ -66,7 +66,7 @@ public class InstructionSetCellV extends InstructionBi
     {
         String[] names = new String[3];
         
-        names[0] = "set.cell";
+        names[0] = "set.cel.v";
         names[1] = "o" + p1;
         names[2] = "v" + p2;
         

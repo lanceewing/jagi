@@ -64,7 +64,7 @@ public class InstructionSetPriorityV extends InstructionBi
     {
         String[] names = new String[3];
         
-        names[0] = "set.priority";
+        names[0] = "set.priority.v";
         names[1] = "o" + p1;
         names[2] = "v" + p2;
         

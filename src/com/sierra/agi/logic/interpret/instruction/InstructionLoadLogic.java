@@ -81,7 +81,7 @@ public class InstructionLoadLogic extends InstructionUni implements Compilable
     {
         String[] names = new String[2];
 
-        names[0] = "load.logic";
+        names[0] = "load.logics";
         names[1] = Integer.toString(p1);
 
         return names;

@@ -77,7 +77,7 @@ public class InstructionDisplayV extends InstructionTri
     {
         String[] names = new String[4];
         
-        names[0] = "display";
+        names[0] = "display.v";
         names[1] = "v" + p1;
         names[2] = "v" + p2;
         names[3] = "mv" + p3;

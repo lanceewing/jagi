@@ -63,7 +63,7 @@ public class InstructionGetV extends InstructionUni
     {
         String[] names = new String[2];
         
-        names[0] = "get";
+        names[0] = "get.v";
         names[1] = "vi" + p1;
         
         return names;

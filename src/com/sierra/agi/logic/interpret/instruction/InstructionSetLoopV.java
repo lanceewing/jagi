@@ -66,7 +66,7 @@ public class InstructionSetLoopV extends InstructionBi
     {
         String[] names = new String[3];
         
-        names[0] = "set.loop";
+        names[0] = "set.loop.v";
         names[1] = "o" + p1;
         names[2] = "v" + p2;
 

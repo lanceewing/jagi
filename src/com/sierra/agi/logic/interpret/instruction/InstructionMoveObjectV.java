@@ -77,7 +77,7 @@ public class InstructionMoveObjectV extends InstructionPent
     {
         String[] names = new String[6];
         
-        names[0] = "move.object";
+        names[0] = "move.object.v";
         names[1] = "o" + p1;
         names[5] = "f" + p5;
         names[2] = "v" + p2;

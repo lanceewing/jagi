@@ -64,7 +64,7 @@ public class InstructionSetViewV extends InstructionBi
     {
         String[] names = new String[3];
         
-        names[0] = "set.view";
+        names[0] = "set.view.v";
         names[1] = "o" + p1;
         names[2] = "v" + p2;
 
