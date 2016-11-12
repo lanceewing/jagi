@@ -16,6 +16,12 @@ import com.sierra.agi.res.ResourceException;
 import com.sierra.agi.res.ResourceProvider;
 import com.sierra.agi.view.ViewException;
 
+/**
+ * A Black Cauldron tool that uses the Java AGI interpreter's ResourceFrame that provides 
+ * viewers for the various resource types.
+ * 
+ * @author Lance Ewing
+ */
 public class BCViewer {
 
   /**
@@ -99,7 +105,7 @@ public class BCViewer {
   public void run() {
     ResourceFrame frame    = new ResourceFrame(resourceCache);
     frame.setVisible(true);
-}
+  }
 
   public static void main(String[] args) throws IOException, ResourceException, PictureException, LogicException, ViewException {
     System.setProperty("com.sierra.agi.logic.LogicProvider", "com.sierra.agi.logic.debug.DebugLogicProvider");
