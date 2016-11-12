@@ -55,7 +55,7 @@ public class InstructionLastCell extends InstructionBi
      */
     public String[] getNames()
     {
-        return new String[] {"last.cell", "o" + p1, "v" + p2};
+        return new String[] {"last.cel", "o" + p1, "v" + p2};
     }
 //#endif DEBUG
 }

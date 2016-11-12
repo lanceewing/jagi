@@ -14,7 +14,7 @@ import java.io.*;
 /**
  * Current Cell instruction.
  *
- * <P><CODE><B>current.cell</B> Instruction 0x32</CODE><BR>
+ * <P><CODE><B>current.cel</B> Instruction 0x32</CODE><BR>
  * The number of the current cell of the View resource associated with the object
  * <CODE>p1</CODE> is stored in <CODE>v[p2]</CODE>.
  *
@@ -57,7 +57,7 @@ public class InstructionCurrentCell extends InstructionBi
      */
     public String[] getNames()
     {
-        return new String[] {"current.cell", "o" + p1, "v" + p2};
+        return new String[] {"current.cel", "o" + p1, "v" + p2};
     }
 //#endif DEBUG
 }

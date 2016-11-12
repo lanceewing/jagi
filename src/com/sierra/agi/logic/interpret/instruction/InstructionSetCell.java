@@ -14,11 +14,11 @@ import java.io.*;
 /**
  * Set Loop Instruction.
  *
- * <P><CODE><B>set.cell.n</B> Instruction 0x2f</CODE><BR>
+ * <P><CODE><B>set.cel.n</B> Instruction 0x2f</CODE><BR>
  * Chooses the cell <CODE>p2</CODE> in the VIEW resource associated with the
  * object <CODE>p1</CODE>.</P>
  *
- * <P><CODE><B>set.cell.v</B> Instruction 0x30</CODE><BR>
+ * <P><CODE><B>set.cel.v</B> Instruction 0x30</CODE><BR>
  * Chooses the cell <CODE>v[p2]</CODE> in the VIEW resource associated with the
  * object <CODE>p1</CODE>.</P>
  *
