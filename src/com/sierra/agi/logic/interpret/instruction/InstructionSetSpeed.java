@@ -8,9 +8,9 @@ import com.sierra.agi.logic.LogicContext;
 import com.sierra.agi.logic.LogicException;
 import com.sierra.agi.logic.interpret.LogicReader;
 
-public class InstructionUnknown1 extends InstructionUni {
+public class InstructionSetSpeed extends InstructionUni {
     /** 
-     * Creates new Unknown instruction with one parameter.
+     * Creates new Set Speed instruction with one parameter.
      *
      * @param context   Game context where this instance of the instruction will be used. (ignored)
      * @param stream    Logic Stream. Instruction must be written in uninterpreted format.
@@ -18,7 +18,7 @@ public class InstructionUnknown1 extends InstructionUni {
      * @param bytecode  Bytecode of the current instruction.
      * @throws IOException I/O Exception are throw when <CODE>stream.read()</CODE> fails.
      */
-    public InstructionUnknown1(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
+    public InstructionSetSpeed(InputStream stream, LogicReader reader, short bytecode, short engineEmulation) throws IOException
     {
         super(stream, bytecode);
     }
@@ -30,6 +30,6 @@ public class InstructionUnknown1 extends InstructionUni {
 
     @Override
     public String[] getNames() {
-        return new String[] {"unknown_" + Integer.toHexString(bytecode), Integer.toString(p1)};
+        return new String[] {"set.speed", "v" + Integer.toString(p1)};
     }
 }
