@@ -234,6 +234,8 @@ public class LogicEvaluator
                         return s;
                     } catch (NumberFormatException e) {
                         return s;
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        return s;
                     }
                 
                 // Words.
@@ -269,6 +271,10 @@ public class LogicEvaluator
                         return "\"" + logic.getMessageProcessed(i) + "\"";
                     }
                     catch (NumberFormatException nfex)
+                    {
+                        return s;
+                    }
+                    catch (ArrayIndexOutOfBoundsException aiobe)
                     {
                         return s;
                     }
