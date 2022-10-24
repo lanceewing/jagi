@@ -304,6 +304,19 @@ public class LogicEvaluator
         decompile(logicInterpreter, instructions, result);
 
         result.add(new LogicLine(0, "}"));
+
+        String[] messages = logicInterpreter.getMessages();
+
+        if (messages != null)
+        {
+            result.add(new LogicLine(0, ""));
+            result.add(new LogicLine(0, "Messages"));
+            for (int i = 0; i < messages.length; i++)
+            {
+                result.add(new LogicLine(0, "Message #" + i + ": " + messages[i]));
+            }
+        }
+
         return result;
     }
     

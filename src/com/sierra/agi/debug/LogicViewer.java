@@ -87,22 +87,7 @@ public class LogicViewer extends JFrame implements ActionListener
                     {
                         writer.println(component.getLineText(i));
                     }
-                    
-                    m = logic.getMessages();
 
-                    if (m != null)
-                    {
-                        writer.println();
-                        writer.println();
-                        writer.println("Messages:");
-
-                        for (i = 0; i < m.length; i++)
-                        {
-                            writer.print("Message #" + i + ": ");
-                            writer.println(m[i]);
-                        }
-                    }
-                
                     writer.close();
                 }
                 catch (IOException ioex)
